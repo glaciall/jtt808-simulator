@@ -16,12 +16,14 @@ public class AppConfiguration extends WebMvcConfigurerAdapter
     {
         registry.addInterceptor(new CommonInterceptor()).addPathPatterns("/**");
 
+        /*
         registry.addInterceptor(new UserInterceptor())
                 .addPathPatterns("/admin/**")
                 .addPathPatterns("/user/**")
                 .excludePathPatterns("/test/**")
                 .excludePathPatterns("/setup/**")
                 .excludePathPatterns("/admin/signin");
+        */
 
         super.addInterceptors(registry);
     }

@@ -2,6 +2,8 @@ package cn.org.hentai.simulator.util;
 
 /**
  * Created by matrixy on 2018/4/14.
+ * 字节块读写工具类
+ * TODO: 把注释补上
  */
 public class Packet
 {
@@ -128,6 +130,21 @@ public class Packet
     {
         System.arraycopy(b, 0, this.data, size, b.length);
         size += b.length;
+        return this;
+    }
+
+    /**
+     * 将b中最多count个字节追加进来，不足的补0x00
+     * @param b
+     * @param count
+     * @return
+     */
+    public Packet addBytes(byte[] b, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            addByte(i < b.length ? b[i] : 0x00);
+        }
         return this;
     }
 

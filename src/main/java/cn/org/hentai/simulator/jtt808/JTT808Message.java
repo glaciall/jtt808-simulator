@@ -3,32 +3,32 @@ package cn.org.hentai.simulator.jtt808;
 /**
  * Created by houcheng on 2018/7/1.
  */
-public class JTTMessage
+public class JTT808Message
 {
     // 消息id
-    public short id;
+    public int id;
 
     // 终端手机号
     public String sim;
 
     // 当前包序号
-    public short packetIndex;
+    public int packetIndex;
 
     // 总包数量
-    public short packetCount;
+    public int packetCount;
 
     // 消息流水号
-    public short sequence;
+    public int sequence;
 
     // 消息体
     public byte[] body;
 
-    public JTTMessage()
+    public JTT808Message()
     {
         // ...
     }
 
-    public JTTMessage(short id, String sim, byte[] body)
+    public JTT808Message(int id, String sim, byte[] body)
     {
         this.id = id;
         this.sim = sim;
@@ -38,6 +38,6 @@ public class JTTMessage
     @Override
     public String toString()
     {
-        return "JTTMessage{" + "id=" + id + ", sim='" + sim + '\'' + ", packetIndex=" + packetIndex + ", packetCount=" + packetCount + ", sequence=" + sequence + '}';
+        return "JTT808Message{" + "id=" + id + ", sim='" + sim + '\'' + ", packetIndex=" + packetIndex + ", packetCount=" + packetCount + ", sequence=" + sequence + '}';
     }
 }

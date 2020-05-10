@@ -7,9 +7,9 @@ import java.io.OutputStream;
 /**
  * Created by matrixy on 2018-08-12.
  */
-public class JTT808Encoder
+public final class JTT808Encoder
 {
-    public static void write(JTTMessage message, OutputStream writer)
+    public static void write(JTT808Message message, OutputStream writer)
     {
         try
         {
@@ -21,7 +21,7 @@ public class JTT808Encoder
         }
     }
 
-    public static byte[] encode(JTTMessage message)
+    public static byte[] encode(JTT808Message message)
     {
         if (message.body.length > 1024) throw new RuntimeException("message body size exceed 1024: " + message.body.length);
         byte crc = (byte)(((message.id >> 8) & 0xff) ^ (message.id & 0xff));

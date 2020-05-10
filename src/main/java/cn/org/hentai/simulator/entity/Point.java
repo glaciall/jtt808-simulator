@@ -41,6 +41,15 @@ public class Point implements Serializable
      */
     private String direction;
 
+    /**
+     * 报警状态位
+     */
+    private Integer warnFlags;
+
+    /**
+     * 车辆状态位
+     */
+    private Integer status;
 
     public Double getLongitude() {
         return longitude;
@@ -88,6 +97,28 @@ public class Point implements Serializable
 
     public void setDirection(String direction) {
         this.direction = direction;
+    }
+
+    public Integer getWarnFlags()
+    {
+        return warnFlags;
+    }
+
+    public Point setWarnFlags(Integer warnFlags)
+    {
+        this.warnFlags = warnFlags;
+        return this;
+    }
+
+    public Integer getStatus()
+    {
+        return status;
+    }
+
+    public Point setStatus(Integer status)
+    {
+        this.status = status;
+        return this;
     }
 
     @Override

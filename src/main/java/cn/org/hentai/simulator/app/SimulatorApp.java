@@ -1,13 +1,5 @@
 package cn.org.hentai.simulator.app;
 
-import cn.org.hentai.simulator.cache.DiskCacheManager;
-import cn.org.hentai.simulator.cache.DiskspaceRecycleMonitor;
-import cn.org.hentai.simulator.cache.FlowStatManager;
-import cn.org.hentai.simulator.server.AIOHttpServer;
-import cn.org.hentai.simulator.server.cache.DBCacheManager;
-import cn.org.hentai.simulator.server.cache.FileCacheManager;
-import cn.org.hentai.simulator.server.socket.ConnectionPool;
-import cn.org.hentai.simulator.server.transmission.TransmissionManager;
 import cn.org.hentai.simulator.util.BeanUtils;
 import cn.org.hentai.simulator.util.Configs;
 import org.slf4j.Logger;
@@ -36,6 +28,7 @@ public class SimulatorApp
         ApplicationContext context = SpringApplication.run(SimulatorApp.class, args);
         BeanUtils.init(context);
         Configs.init(context);
+        /*
         CachedSettings.init();
         ConnectionPool.init();
 
@@ -57,5 +50,6 @@ public class SimulatorApp
 
         TransmissionManager.init();
         AIOHttpServer.init();
+        */
     }
 }

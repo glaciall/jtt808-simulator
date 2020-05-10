@@ -2,7 +2,7 @@ package cn.org.hentai.simulator.entity;
 
 import cn.org.hentai.simulator.jtt808.JTT808Decoder;
 import cn.org.hentai.simulator.jtt808.JTT808Encoder;
-import cn.org.hentai.simulator.jtt808.JTTMessage;
+import cn.org.hentai.simulator.jtt808.JTT808Message;
 import cn.org.hentai.simulator.manager.ThreadManager;
 import cn.org.hentai.simulator.state.IState;
 import cn.org.hentai.simulator.util.*;
@@ -82,11 +82,11 @@ public class XVehicleDevice
             byte[] block = new byte[buffSize];
             int len = 0;
             if ((len = this.reader.read(block)) != buffSize) logger.debug(String.format("读取失败了，预期：%d，实际：%d", buffSize, len));
-            decoder.write(block, 0, len);
+            // decoder.write(block, 0, len);
 
             while (true)
             {
-                Packet packet = decoder.read();
+                Packet packet = null; // decoder.read();
                 if (null == packet)
                 {
                     break;
@@ -124,7 +124,7 @@ public class XVehicleDevice
                 }
                 byte[] body = query.nextBytes(bodyLength);
 
-                JTTMessage msg = new JTTMessage();
+                JTT808Message msg = new JTT808Message();
                 msg.id = id;
                 msg.sim = sim;
                 msg.sequence = sequence;
@@ -227,7 +227,7 @@ public class XVehicleDevice
         try { packet.addBytes("京12345".getBytes("GBK")); } catch(Exception e) { }
 
         startTime = System.currentTimeMillis();
-        JTTMessage msg = new JTTMessage();
+        JTT808Message msg = new JTT808Message();
         msg.sim = this.sim;
         msg.id = 0x0100;
         msg.sequence = next();
@@ -241,7 +241,7 @@ public class XVehicleDevice
     public void authenticate()
     {
         startTime = System.currentTimeMillis();
-        JTTMessage msg = new JTTMessage();
+        JTT808Message msg = new JTT808Message();
         msg.sim = this.sim;
         msg.id = 0x0102;
         msg.sequence = next();
@@ -296,7 +296,7 @@ public class XVehicleDevice
                     data = new byte[len];
                     System.arraycopy(block, 0, data, 0, len);
                 }
-                JTTMessage msg = new JTTMessage();
+                JTT808Message msg = new JTT808Message();
                 msg.id = 0x0f01;
                 msg.sequence = next();
                 msg.packetIndex = (short) i;
@@ -326,7 +326,7 @@ public class XVehicleDevice
     /**
      * 发送消息，注意，要跟commitPendings()一起使用
      */
-    private void send(JTTMessage msg)
+    private void send(JTT808Message msg)
     {
         // this.connect.send(JTT808Encoder.encode(msg));
         // TODO: 将要发送的内容放到缓冲区里，然后由其它的线程池去专门完成发送的事情
@@ -336,7 +336,7 @@ public class XVehicleDevice
         }
     }
 
-    // send(JTTMessage msg)要跟此方法一起使用
+    // send(JTT808Message msg)要跟此方法一起使用
     private void commitPendings()
     {
         ThreadManager.depute(this);
@@ -345,7 +345,7 @@ public class XVehicleDevice
     private boolean send()
     {
         if (pendingMessages.size() == 0) return false;
-        JTTMessage msg = null;
+        JTT808Message msg = null;
         synchronized (pendingMessages)
         {
             msg = pendingMessages.removeFirst();
@@ -369,7 +369,7 @@ public class XVehicleDevice
         try { this.writer.flush(); } catch(Exception e) { }
     }
 
-    LinkedList<JTTMessage> pendingMessages = new LinkedList<>();
+    LinkedList<JTT808Message> pendingMessages = new LinkedList<>();
 
     /**
      * 发送位置信息
@@ -391,7 +391,7 @@ public class XVehicleDevice
         String eventCode = position.getEvent();
 
         // 发送位置信息
-        JTTMessage msg = new JTTMessage();
+        JTT808Message msg = new JTT808Message();
         msg.id = 0x0200;
         msg.sequence = next();
         msg.sim = this.sim;
@@ -440,7 +440,7 @@ public class XVehicleDevice
             {
                 throw new RuntimeException(String.format("invalid event code: %s", code));
             }
-            JTTMessage msg = new JTTMessage();
+            JTT808Message msg = new JTT808Message();
             msg.sim = this.sim;
             msg.id = msgId;
             msg.sequence = next();
@@ -473,7 +473,7 @@ public class XVehicleDevice
         else
         {
             logger.debug(String.format("Event end: %s - %d", code, event.getSequence()));
-            JTTMessage msg = new JTTMessage();
+            JTT808Message msg = new JTT808Message();
             msg.id = 0x0fff;
             msg.sim = this.sim;
             msg.sequence = next();
@@ -504,7 +504,7 @@ public class XVehicleDevice
         return timeBCD;
     }
 
-    JTTMessage finalityEventMessage = null;
+    JTT808Message finalityEventMessage = null;
 
 
     /**
@@ -615,7 +615,7 @@ public class XVehicleDevice
                     System.arraycopy(block, 0, data, 0, len);
                 }
 
-                JTTMessage msg = new JTTMessage();
+                JTT808Message msg = new JTT808Message();
                 msg.id = 0x0f05;
                 msg.sequence = next();
                 msg.packetIndex = (short) i;
