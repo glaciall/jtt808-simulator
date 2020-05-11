@@ -3,6 +3,9 @@ package cn.org.hentai.simulator.task;
 import cn.org.hentai.simulator.entity.DeviceInfo;
 import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.jtt808.JTT808Message;
+import cn.org.hentai.simulator.task.event.EventDispatcher;
+import cn.org.hentai.simulator.task.eventloop.Executable;
+import cn.org.hentai.simulator.task.eventloop.RunnerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +55,9 @@ public abstract class AbstractDriveTask implements Driveable
     public final void init(Map<String, Object> settings)
     {
         // TODO: 搞点什么好呢？
+
+        // 事件委托
+        EventDispatcher.register(this);
     }
 
     // HINT: 整个日志吧，而且要根据当前的模式来决定是不是真的保存下来
@@ -61,6 +67,31 @@ public abstract class AbstractDriveTask implements Driveable
 
         if ("debug".equals(this.mode) == false) return;
         // HOWTO: 保存到什么地方好呢？
+    }
+
+    /**
+     * 在millis毫秒后执行Exectable
+     * @param executable 需要执行的任务
+     * @param milliseconds 等待的毫秒
+     */
+    public final void executeAfter(Executable executable, int milliseconds)
+    {
+        RunnerManager.getInstance().execute(this, executable, milliseconds);
+    }
+
+    public final void execute(Executable executable)
+    {
+        executeAfter(executable, 0);
+    }
+
+    /**
+     * 按照interval毫秒的间隔执行Exectable
+     * @param executable 需要执行的任务
+     * @param interval 间隔时间，单位毫秒
+     */
+    public final void executeConstantly(Executable executable, int interval)
+    {
+        RunnerManager.getInstance().execute(this, executable, interval, interval);
     }
 
     // 启动车辆行驶行程

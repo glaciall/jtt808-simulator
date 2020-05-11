@@ -4,6 +4,8 @@ import cn.org.hentai.simulator.jtt808.JTT808Message;
 import cn.org.hentai.simulator.task.event.EventEnum;
 import cn.org.hentai.simulator.task.event.Listen;
 import cn.org.hentai.simulator.task.event.EventDispatcher;
+import cn.org.hentai.simulator.task.eventloop.Executable;
+import cn.org.hentai.simulator.task.eventloop.RunnerManager;
 import cn.org.hentai.simulator.task.net.ConnectionPool;
 import cn.org.hentai.simulator.util.ByteUtils;
 import cn.org.hentai.simulator.util.Packet;
@@ -35,7 +37,7 @@ public class SimpleDriveTask extends AbstractDriveTask
     @Listen(name = EventEnum.message_received)
     public void onServerMessage(JTT808Message msg)
     {
-
+        // HOWTO: 得想个办法把这个方法也触发一下，用来做交互日志就挺好的
     }
 
     @Listen(name = EventEnum.connected)
@@ -65,6 +67,8 @@ public class SimpleDriveTask extends AbstractDriveTask
 
             // 其它就不管了
         }
+
+        lastSentMessageId = 0;
     }
 
     public void onAuthenticateResponsed(boolean isSuccess)
@@ -120,9 +124,35 @@ public class SimpleDriveTask extends AbstractDriveTask
     @Override
     public void startup()
     {
-        // 事件分发委托
-        EventDispatcher.register(this);
         connectionId = pool.connect("localhost", 20021, this);
+
+        executeConstantly(new Executable()
+        {
+            @Override
+            public void execute(AbstractDriveTask driveTask)
+            {
+                ((SimpleDriveTask)driveTask).heartbeat();
+            }
+        }, 1000);
+
+        executeConstantly(new Executable()
+        {
+            @Override
+            public void execute(AbstractDriveTask driveTask)
+            {
+                ((SimpleDriveTask)driveTask).reportLocation();
+            }
+        }, 3000);
+    }
+
+    public void reportLocation()
+    {
+        logger.debug("report location...");
+    }
+
+    public void heartbeat()
+    {
+        logger.debug("heartbeat...");
     }
 
     @Override

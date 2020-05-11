@@ -6,7 +6,7 @@ import cn.org.hentai.simulator.task.AbstractDriveTask;
  * Created by matrixy on 2020/5/8.
  * 用于LoopRunner执行的任务片断
  */
-public interface Task
+public interface Executable
 {
     /**
      * 任务执行入口

@@ -36,16 +36,21 @@ public final class RunnerManager
     }
 
     // 委托运行某任务
-    public void execute(AbstractDriveTask driveTask, Task task)
+    public void execute(AbstractDriveTask driveTask, Executable task)
     {
-        execute(driveTask, task, 0);
+        execute(driveTask, task, 0, 0);
+    }
+
+    public void execute(AbstractDriveTask driveTask, Executable task, int milliseconds)
+    {
+        execute(driveTask, task, milliseconds, 0);
     }
 
     // 委托在milliseconds时间后运行某任务
-    public void execute(AbstractDriveTask driveTask, Task task, int milliseconds)
+    public void execute(AbstractDriveTask driveTask, Executable task, int milliseconds, int interval)
     {
         int hash = Math.abs(driveTask.hashCode() % runners.length);
-        runners[hash].execute(task, milliseconds);
+        runners[hash].execute(driveTask, task, milliseconds, interval);
     }
 
     // 关闭线程组里的所有LoopRunner

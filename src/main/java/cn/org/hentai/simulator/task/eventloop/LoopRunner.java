@@ -1,11 +1,11 @@
 package cn.org.hentai.simulator.task.eventloop;
 
+import cn.org.hentai.simulator.task.AbstractDriveTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -17,35 +17,41 @@ public class LoopRunner extends Thread
     static Logger logger = LoggerFactory.getLogger(LoopRunner.class);
 
     // 将执行的任务
-    private LinkedList<Task> jobs;
+    private LinkedList<ExecutableTask> jobs;
 
     // 还需要等待的任务
-    private TreeSet<Task> tasks;
+    private TreeSet<ExecutableTask> tasks;
 
     private Object lock;
 
     public LoopRunner()
     {
         lock = new Object();
-        tasks = new TreeSet<Task>(new Comparator<Task>()
+        tasks = new TreeSet<ExecutableTask>(new Comparator<ExecutableTask>()
         {
             @Override
-            public int compare(Task o1, Task o2)
+            public int compare(ExecutableTask o1, ExecutableTask o2)
             {
-                return 0;
+                long v = o1.executeTime - o2.executeTime;
+                return v == 0 ? 0 : v > 0 ? 1 : -1;
             }
         });
-        jobs = new LinkedList<Task>();
+        jobs = new LinkedList<ExecutableTask>();
     }
 
     // 立即执行（下一个循环）
-    public void execute(Task task)
+    public void execute(AbstractDriveTask driveTask, Executable task)
     {
-        execute(task, 0);
+        execute(driveTask, task, 0, 0);
     }
 
     // 在milliseconds时间后执行
-    public void execute(Task task, int milliseconds)
+    public void execute(AbstractDriveTask driveTask, Executable task, int milliseconds, int interval)
+    {
+        execute(new ExecutableTask(driveTask, task, System.currentTimeMillis() + milliseconds, interval));
+    }
+
+    public void execute(ExecutableTask task)
     {
         synchronized (lock)
         {
@@ -55,40 +61,50 @@ public class LoopRunner extends Thread
 
     public void run()
     {
-        boolean jobExecuted = false;
+        long ms = 0;
         while (!this.isInterrupted())
         {
             try
             {
-                if (tasks.isEmpty())
-                {
-                    Thread.sleep(1);
-                    continue;
-                }
-
+                ms = 0;
                 long now = System.currentTimeMillis();
                 synchronized (lock)
                 {
                     while (tasks.isEmpty() == false)
                     {
-                        Task task = tasks.first();
-                        // TODO: 如果还没有到时间，那就放回去，并且跳出循环
-                        if (false)
+                        ExecutableTask task = tasks.first();
+                        if (now < task.executeTime)
                         {
+                            // 如果还没有到时间，那就跳出循环
+                            ms = task.executeTime - now;
                             break;
                         }
-                        tasks.remove(task);
-                        // 否则加到执行列表里来
-                        jobs.addLast(task);
+                        else
+                        {
+                            // 否则加到执行列表里来
+                            tasks.remove(task);
+                            jobs.addLast(task);
+                        }
                     }
                 }
 
+                if (jobs.isEmpty())
+                {
+                    Thread.sleep(Math.max(ms, 1));
+                    continue;
+                }
+
                 // 遍历并执行任务
-                for (Task job : jobs)
+                for (ExecutableTask task : jobs)
                 {
                     try
                     {
-                        job.execute(null);
+                        task.executable.execute(task.driveTask);
+                        if (task.interval > 0)
+                        {
+                            task.executeTime += task.interval;
+                            execute(task);
+                        }
                     }
                     catch(Exception e)
                     {
@@ -102,7 +118,6 @@ public class LoopRunner extends Thread
             {
                 logger.error("execute failed", ex);
             }
-            if (jobExecuted == false) try { Thread.sleep(0, 1000 * 50); } catch(Exception e) { }
         }
     }
 }

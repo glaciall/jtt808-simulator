@@ -1,12 +1,12 @@
 package cn.org.hentai.simulator.task.event;
 
 import cn.org.hentai.simulator.task.AbstractDriveTask;
+import cn.org.hentai.simulator.task.eventloop.RunnerManager;
+import cn.org.hentai.simulator.task.eventloop.Executable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -26,7 +26,7 @@ public final class EventDispatcher
     }
 
     // 事件委托
-    public void dispatch(AbstractDriveTask driveTask, String tag, String attachment, Object data)
+    public void dispatch(AbstractDriveTask driveTask, String tag, String attachment, final Object data)
     {
         try
         {
@@ -40,10 +40,19 @@ public final class EventDispatcher
                 driveTask.log("no event handler for: " + tag + ":::" + attachment);
                 return;
             }
+
             // TODO: 暂时只有一个参数或没有参数，后面再想办法做参数类型匹配，按需赋值，就跟spring一样
-            Object[] args = new Object[method.getParameterCount()];
-            if (args.length == 1) args[0] = data;
-            method.invoke(driveTask, args);
+
+            RunnerManager.getInstance().execute(driveTask, new Executable()
+            {
+                @Override
+                public void execute(AbstractDriveTask driveTask)
+                {
+                    Object[] args = new Object[method.getParameterCount()];
+                    if (args.length == 1) args[0] = data;
+                    try { method.invoke(driveTask, args); } catch(Exception e) { }
+                }
+            });
         }
         catch(Exception ex)
         {

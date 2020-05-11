@@ -76,7 +76,7 @@ public class TaskController
             List<DriverPhoto> photos = driverPhotoService.findByDriverId(scheduleTask.getDriverId());
             if (photos == null || photos.size() == 0) throw new RuntimeException("线程计划的驾驶员未设定照片");
 
-            // Task task = new Task(scheduleTaskId, scheduleTask.getRouteId(), scheduleTask.getVehicleId(), device.getDeviceSN(), String.valueOf(SIMGenerator.get()), ConfigUtil.getConfig("file.upload.path") + photos.get((int)(Math.random() * photos.size())).getPhoto(), new Date());
+            // Executable task = new Executable(scheduleTaskId, scheduleTask.getRouteId(), scheduleTask.getVehicleId(), device.getDeviceSN(), String.valueOf(SIMGenerator.get()), ConfigUtil.getConfig("file.upload.path") + photos.get((int)(Math.random() * photos.size())).getPhoto(), new Date());
             // SimulatorManager.getInstance().add(task);
         }
         catch(Exception ex)

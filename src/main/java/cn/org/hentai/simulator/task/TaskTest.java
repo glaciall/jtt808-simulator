@@ -27,9 +27,14 @@ public class TaskTest
             }
         };
 
-        AbstractDriveTask task = new SimpleDriveTask();
-        task.init(settings);
-        task.startup();
+        final int CONCURRENT = 1000;
+        AbstractDriveTask[] tasks = new SimpleDriveTask[CONCURRENT];
+        for (int i = 0; i < CONCURRENT; i++)
+        {
+            tasks[i] = new SimpleDriveTask();
+            tasks[i].init(settings);
+            tasks[i].startup();
+        }
 
         System.in.read();
     }
