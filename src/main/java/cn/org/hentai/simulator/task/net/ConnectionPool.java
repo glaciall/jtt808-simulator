@@ -42,6 +42,7 @@ public class ConnectionPool
     {
         group = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
         bootstrap.group(group)
             .channel(NioSocketChannel.class)
             .handler(new ChannelInitializer<SocketChannel>()
@@ -73,6 +74,7 @@ public class ConnectionPool
 
     protected void notify(String tag, String channelId, String messageId, Object data)
     {
+        logger.debug("notify -> channel: {}, tag: {}", channelId, tag);
         for (int i = 0; i < 100 && connections.containsKey(channelId) == false; i++) try { Thread.sleep(0, 1000); } catch(Exception e) { };
         Connection conn = connections.get(channelId);
         if (conn != null)

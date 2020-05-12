@@ -12,6 +12,8 @@ import cn.org.hentai.simulator.util.Packet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 /**
  * Created by matrixy on 2020/5/9.
  */
@@ -26,10 +28,11 @@ public class SimpleDriveTask extends AbstractDriveTask
     String multimediaConnectionId;
 
     // 消息包流水号
-    int sequence = 0;
+    int sequence = 1;
 
     // 最后发送的消息ID
     int lastSentMessageId = 0;
+    Map<Integer, Integer> message;
 
     // 连接池
     ConnectionPool pool = ConnectionPool.getInstance();
@@ -43,6 +46,8 @@ public class SimpleDriveTask extends AbstractDriveTask
     @Listen(name = EventEnum.connected)
     public void onConnected()
     {
+        logger.info("连接成功了？");
+
         // 连接成功时，发送鉴权消息
         JTT808Message msg = new JTT808Message();
         msg.id = 0x0102;
@@ -60,6 +65,8 @@ public class SimpleDriveTask extends AbstractDriveTask
         int result = msg.body[4] & 0xff;
         logger.info(String.format("answer -> seq: %4d, id: %04x, result: %02d", answerSequence, answerMessageId, result));
 
+        // TODO: 应该整个hashmap保存上一次发送的消息ID，KEY为流水号
+
         switch (lastSentMessageId)
         {
             // 鉴权消息
@@ -75,11 +82,11 @@ public class SimpleDriveTask extends AbstractDriveTask
     {
         if (isSuccess)
         {
-            // HOWTO: 在这里注册个定时器？
+            startSession();
         }
         else
         {
-            String sn = "0123456";
+            String sn = getParameter("device.id");
             byte[] vin = new byte[0];
             try { vin = "京X00001".getBytes("GBK"); } catch(Exception ex) { }
 
@@ -106,8 +113,7 @@ public class SimpleDriveTask extends AbstractDriveTask
         int result = msg.body[2] & 0xff;
         if (result == 0x00)
         {
-            // TODO: 开始发送位置，怎么个发法？
-            // HOWTO: 在这里才开始注册定时器？
+            startSession();
         }
         else
         {
@@ -124,8 +130,13 @@ public class SimpleDriveTask extends AbstractDriveTask
     @Override
     public void startup()
     {
+        EventDispatcher.register(this);
         connectionId = pool.connect("localhost", 20021, this);
+    }
 
+    // 开始正常会话，发送心跳与位置
+    protected void startSession()
+    {
         executeConstantly(new Executable()
         {
             @Override
@@ -147,12 +158,12 @@ public class SimpleDriveTask extends AbstractDriveTask
 
     public void reportLocation()
     {
-        logger.debug("report location...");
+        logger.debug("{}: report location...", getParameter("device.id"));
     }
 
     public void heartbeat()
     {
-        logger.debug("heartbeat...");
+        logger.debug("{}: heartbeat...", getParameter("device.id"));
     }
 
     @Override
@@ -160,11 +171,13 @@ public class SimpleDriveTask extends AbstractDriveTask
     {
         try
         {
-            msg.sim = "013800138000";
+            msg.sim = getParameter("device.sim");
             msg.sequence = (short)((sequence++) & 0xffff);
             pool.send(connectionId, msg);
 
             lastSentMessageId = msg.id;
+
+            logger.info("send: {} -> {}", msg.sim, msg.sequence);
         }
         catch (Exception e)
         {

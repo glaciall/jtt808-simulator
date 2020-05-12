@@ -18,6 +18,7 @@ public class JT808MessageEncoder extends MessageToByteEncoder<JTT808Message>
     @Override
     protected void encode(ChannelHandlerContext ctx, JTT808Message msg, ByteBuf out) throws Exception
     {
+        System.out.println(msg);
         out.writeBytes(JTT808Encoder.encode(msg));
     }
 }

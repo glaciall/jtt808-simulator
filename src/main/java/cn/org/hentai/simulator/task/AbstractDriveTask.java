@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -48,16 +49,20 @@ public abstract class AbstractDriveTask implements Driveable
 
     DeviceInfo deviceInfo;
 
+    Map<String, String> parameters;
+
     /**
      * 使用参数集settings进行初始化
      * @param settings 参数集名值对
      */
-    public final void init(Map<String, Object> settings)
+    public final void init(Map<String, String> settings)
     {
-        // TODO: 搞点什么好呢？
-
-        // 事件委托
-        EventDispatcher.register(this);
+        // 复制一份
+        this.parameters = new HashMap<>(settings.size());
+        for (String key : settings.keySet())
+        {
+            this.parameters.put(key, settings.get(key));
+        }
     }
 
     // HINT: 整个日志吧，而且要根据当前的模式来决定是不是真的保存下来
@@ -92,6 +97,11 @@ public abstract class AbstractDriveTask implements Driveable
     public final void executeConstantly(Executable executable, int interval)
     {
         RunnerManager.getInstance().execute(this, executable, interval, interval);
+    }
+
+    public String getParameter(String name)
+    {
+        return this.parameters.get(name);
     }
 
     // 启动车辆行驶行程

@@ -61,12 +61,11 @@ public class LoopRunner extends Thread
 
     public void run()
     {
-        long ms = 0;
         while (!this.isInterrupted())
         {
             try
             {
-                ms = 0;
+                long ms = 0;
                 long now = System.currentTimeMillis();
                 synchronized (lock)
                 {
