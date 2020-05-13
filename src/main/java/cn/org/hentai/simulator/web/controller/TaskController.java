@@ -1,23 +1,16 @@
 package cn.org.hentai.simulator.web.controller;
 
-import cn.org.hentai.simulator.entity.Task;
 import cn.org.hentai.simulator.manager.ScheduleTaskManager;
-import cn.org.hentai.simulator.manager.SimulatorManager;
-import cn.org.hentai.simulator.util.SIMGenerator;
-import cn.org.hentai.simulator.web.entity.DriverPhoto;
 import cn.org.hentai.simulator.web.entity.ScheduleTask;
-import cn.org.hentai.simulator.web.service.XDriverPhotoService;
-import cn.org.hentai.simulator.web.service.XRouteService;
-import cn.org.hentai.simulator.web.service.XScheduleTaskService;
+import cn.org.hentai.simulator.web.service.RouteService;
+import cn.org.hentai.simulator.web.service.ScheduleTaskService;
 import cn.org.hentai.simulator.web.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,13 +22,10 @@ import java.util.List;
 public class TaskController
 {
     @Autowired
-    XRouteService routeService;
+    RouteService routeService;
 
     @Autowired
-    private XScheduleTaskService scheduleTaskService;
-
-    @Autowired
-    XDriverPhotoService driverPhotoService;
+    private ScheduleTaskService scheduleTaskService;
 
     /**
      * 跳转到线路计划任务列表
@@ -72,9 +62,6 @@ public class TaskController
             ScheduleTask scheduleTask = scheduleTaskService.getById(scheduleTaskId);
             // VehicleDevice device = deviceService.getByVehicleId(scheduleTask.getVehicleId());
             // if (null == device) throw new RuntimeException("未查询到此车辆所绑定的车机");
-
-            List<DriverPhoto> photos = driverPhotoService.findByDriverId(scheduleTask.getDriverId());
-            if (photos == null || photos.size() == 0) throw new RuntimeException("线程计划的驾驶员未设定照片");
 
             // Executable task = new Executable(scheduleTaskId, scheduleTask.getRouteId(), scheduleTask.getVehicleId(), device.getDeviceSN(), String.valueOf(SIMGenerator.get()), ConfigUtil.getConfig("file.upload.path") + photos.get((int)(Math.random() * photos.size())).getPhoto(), new Date());
             // SimulatorManager.getInstance().add(task);

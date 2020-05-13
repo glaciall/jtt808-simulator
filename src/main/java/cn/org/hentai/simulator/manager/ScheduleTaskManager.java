@@ -5,10 +5,8 @@ import cn.org.hentai.simulator.util.BeanUtils;
 import cn.org.hentai.simulator.util.Configs;
 import cn.org.hentai.simulator.util.DateUtils;
 import cn.org.hentai.simulator.util.SIMGenerator;
-import cn.org.hentai.simulator.web.entity.DriverPhoto;
 import cn.org.hentai.simulator.web.entity.ScheduleTask;
-import cn.org.hentai.simulator.web.service.XDriverPhotoService;
-import cn.org.hentai.simulator.web.service.XScheduleTaskService;
+import cn.org.hentai.simulator.web.service.ScheduleTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -30,10 +28,10 @@ public final class ScheduleTaskManager
     // 应用启动时，加载全部
     public void init()
     {
-        XScheduleTaskService taskService = null;
+        ScheduleTaskService taskService = null;
         try
         {
-            taskService = BeanUtils.create(XScheduleTaskService.class);
+            taskService = BeanUtils.create(ScheduleTaskService.class);
             for (ScheduleTask scheduleTask : taskService.find())
             {
                 load(scheduleTask);
@@ -77,10 +75,10 @@ public final class ScheduleTaskManager
 
     public void load(Long scheduleTaskId)
     {
-        XScheduleTaskService taskService = null;
+        ScheduleTaskService taskService = null;
         try
         {
-            taskService = BeanUtils.create(XScheduleTaskService.class);
+            taskService = BeanUtils.create(ScheduleTaskService.class);
             load(taskService.getById(scheduleTaskId));
         }
         catch(Exception ex)
@@ -116,7 +114,6 @@ public final class ScheduleTaskManager
     {
         // 驾驶员
         // 车辆/车机
-        XDriverPhotoService photoService = null;
 
         try
         {
@@ -129,20 +126,10 @@ public final class ScheduleTaskManager
             // 更新计划任务的最后行驶时间，避免重复运行
             plan.setLastDriveTime(startTime);
 
-            photoService = BeanUtils.create(XDriverPhotoService.class);
-
             Long driverId = plan.getDriverId();
 
             // 064621811122
             String driverPhoto = null;
-            if (driverId != null)
-            {
-                List<DriverPhoto> photos = photoService.findByDriverId(driverId);
-                if (photos.size() == 0) throw new RuntimeException("no driver photos for: " + plan.getId());
-                String path = photos.get((int) (Math.random() * photos.size())).getPhoto();
-                if (StringUtils.isEmpty(path) == false)
-                    driverPhoto = Configs.get("file.upload.path") + path;
-            }
 
             // 添加到任务队列里去
             Task task = new Task(plan.getId(), plan.getRouteId(), plan.getVehicleId(), null, String.valueOf(SIMGenerator.get()), driverPhoto, startTime);
@@ -153,10 +140,6 @@ public final class ScheduleTaskManager
         catch(Exception ex)
         {
             logger.error("", ex);
-        }
-        finally
-        {
-            try { BeanUtils.destroy(photoService); } catch(Exception e) { }
         }
     }
 

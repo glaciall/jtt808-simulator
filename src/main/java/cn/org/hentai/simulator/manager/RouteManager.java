@@ -7,10 +7,10 @@ import cn.org.hentai.simulator.web.entity.Route;
 import cn.org.hentai.simulator.web.entity.RoutePoint;
 import cn.org.hentai.simulator.web.entity.StayPoint;
 import cn.org.hentai.simulator.web.entity.TroubleSegment;
-import cn.org.hentai.simulator.web.service.XRoutePointService;
-import cn.org.hentai.simulator.web.service.XRouteService;
-import cn.org.hentai.simulator.web.service.XStayPointService;
-import cn.org.hentai.simulator.web.service.XTroubleSegmentService;
+import cn.org.hentai.simulator.web.service.RoutePointService;
+import cn.org.hentai.simulator.web.service.RouteService;
+import cn.org.hentai.simulator.web.service.StayPointService;
+import cn.org.hentai.simulator.web.service.TroubleSegmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,14 +54,14 @@ public final class RouteManager
     {
         logger.info("初始化线路开始...");
         if (routes.size() > 0) return;
-        XRouteService routeService = null;
+        RouteService routeService = null;
         try
         {
             // 安全事件分类初始化/缓存
             EventCache.init();
 
-            routeService = BeanUtils.create(XRouteService.class);
-            List<Route> routes = routeService.find();
+            routeService = BeanUtils.create(RouteService.class);
+            List<Route> routes = routeService.list();
             for (Route route : routes)
             {
                 load(route);
@@ -83,10 +83,10 @@ public final class RouteManager
     public void load(Long routeId)
     {
         Route route = null;
-        XRouteService routeService = null;
+        RouteService routeService = null;
         try
         {
-            routeService = BeanUtils.create(XRouteService.class);
+            routeService = BeanUtils.create(RouteService.class);
             route = routeService.getById(routeId);
             if (null == route) throw new RuntimeException("no such route: " + routeId);
 
@@ -105,14 +105,14 @@ public final class RouteManager
     public void load(Route route)
     {
         XRoute xr = new XRoute();
-        XRoutePointService pointService = null;
-        XStayPointService stayPointService = null;
-        XTroubleSegmentService segmentService = null;
+        RoutePointService pointService = null;
+        StayPointService stayPointService = null;
+        TroubleSegmentService segmentService = null;
         try
         {
-            pointService = BeanUtils.create(XRoutePointService.class);
-            stayPointService = BeanUtils.create(XStayPointService.class);
-            segmentService = BeanUtils.create(XTroubleSegmentService.class);
+            pointService = BeanUtils.create(RoutePointService.class);
+            stayPointService = BeanUtils.create(StayPointService.class);
+            segmentService = BeanUtils.create(TroubleSegmentService.class);
 
             xr.setMinSpeed(route.getMinSpeed());
             xr.setMaxSpeed(route.getMaxSpeed());

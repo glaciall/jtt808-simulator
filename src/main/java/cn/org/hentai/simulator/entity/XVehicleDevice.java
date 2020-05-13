@@ -270,49 +270,6 @@ public class XVehicleDevice
         if (StringUtils.isEmpty(photoPath)) {
             return ;
         }
-        try (FileInputStream fis = new FileInputStream(photoPath))
-        {
-            int i = 1;
-            int blocks = (int) Math.ceil(new File(photoPath).length() / 1000f);
-            while (true)
-            {
-                len = fis.read(block);
-                if (len <= 0)
-                {
-                    break;
-                }
-
-                byte[] data;
-                if (i == 1)
-                {
-                    data = new byte[len + 9];
-                    System.arraycopy(block, 0, data, 9, len);
-                    System.arraycopy(ByteUtils.toBytes((int) (114.12345678f * 1000000)), 0, data, 0, 4);
-                    System.arraycopy(ByteUtils.toBytes((int) (41.87654321f * 1000000)), 0, data, 4, 4);
-                    data[8] = 1;
-                }
-                else
-                {
-                    data = new byte[len];
-                    System.arraycopy(block, 0, data, 0, len);
-                }
-                JTT808Message msg = new JTT808Message();
-                msg.id = 0x0f01;
-                msg.sequence = next();
-                msg.packetIndex = (short) i;
-                msg.packetCount = (short) blocks;
-                msg.sim = this.sim;
-                msg.body = data;
-                i += 1;
-                // 发送消息
-                this.send(msg);
-            }
-            this.commitPendings();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -369,7 +326,7 @@ public class XVehicleDevice
         try { this.writer.flush(); } catch(Exception e) { }
     }
 
-    LinkedList<JTT808Message> pendingMessages = new LinkedList<>();
+    LinkedList<JTT808Message> pendingMessages = new LinkedList<JTT808Message>();
 
     /**
      * 发送位置信息
@@ -584,51 +541,6 @@ public class XVehicleDevice
 
         int len;
         byte[] block = new byte[900];
-
-        try (FileInputStream fis = new FileInputStream(file))
-        {
-            int i = 1;
-            int blocks = (int) Math.ceil(file.length() / 900f);
-            while (true)
-            {
-                len = fis.read(block);
-                if (len <= 0)
-                {
-                    break;
-                }
-                byte[] data = null;
-                if (i == 1)
-                {
-                    data = new byte[len + 36];
-                    System.arraycopy(ByteUtils.toBytes(messageId), 0, data, 0, 4);
-                    data[4] = mmType;
-                    data[5] = encType;
-                    data[6] = 0x00;
-                    data[7] = (byte)(channel & 0xff);
-                    // 因为车机服务器端不处理这一段信息，所以这里先写死内容了
-                    System.arraycopy(ByteUtils.parse("00 00 00 00 00 00 00 00 02 73 7E 80 06 D8 E0 80 00 C8 04 C4 01 68 18 08 14 18 31 11"), 0, data, 8, 28);
-                    System.arraycopy(block, 0, data, 36, len);
-                }
-                else
-                {
-                    data = new byte[len];
-                    System.arraycopy(block, 0, data, 0, len);
-                }
-
-                JTT808Message msg = new JTT808Message();
-                msg.id = 0x0f05;
-                msg.sequence = next();
-                msg.packetIndex = (short) i;
-                msg.packetCount = (short) blocks;
-                msg.sim = this.sim;
-                msg.body = data;
-                i += 1;
-
-                // 发送消息
-                // 注意，这里就不再调用commitPendings了，因为上一级已经调用过了，不过写上也没有关系
-                this.send(msg);
-            }
-        }
     }
 
     /**

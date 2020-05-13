@@ -4,7 +4,7 @@ import cn.org.hentai.simulator.entity.Task;
 import cn.org.hentai.simulator.manager.ThreadManager;
 import cn.org.hentai.simulator.util.BeanUtils;
 import cn.org.hentai.simulator.web.entity.ScheduleTask;
-import cn.org.hentai.simulator.web.service.XScheduleTaskService;
+import cn.org.hentai.simulator.web.service.ScheduleTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +30,11 @@ public class ST10Init extends IState<Task>
         logger.debug("行程计划：" + task.getScheduleTaskId() + "已启动...");
 
         // 先更新计划任务状态信息
-        XScheduleTaskService scheduleTaskService = null;
+        ScheduleTaskService scheduleTaskService = null;
         try
         {
             // 更新计划任务的执行信息
-            scheduleTaskService = BeanUtils.create(XScheduleTaskService.class);
+            scheduleTaskService = BeanUtils.create(ScheduleTaskService.class);
             ScheduleTask plan = scheduleTaskService.getById(task.getScheduleTaskId());
             if (plan != null)
             {

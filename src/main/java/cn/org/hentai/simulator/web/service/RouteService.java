@@ -14,7 +14,7 @@ import java.util.List;
  * Created by houcheng on 2018/11/25.
  */
 @Service
-public class XRouteService
+public class RouteService
 {
     @Autowired
     RouteMapper routeMapper;
@@ -44,14 +44,14 @@ public class XRouteService
         return routeMapper.selectByPrimaryKey(id);
     }
 
-    public List<Route> find()
+    public List<Route> list()
     {
         return routeMapper.selectByExample(new RouteExample());
     }
 
-    public Page<Route> findPaginate(String name, int pageIndex, int pageSize)
+    public Page<Route> find(String name, int pageIndex, int pageSize)
     {
-        Page<Route> page = new Page<>(pageIndex, pageSize);
+        Page<Route> page = new Page<Route>(pageIndex, pageSize);
         RouteExample.Criteria criteria = new RouteExample().createCriteria();
         criteria.andMinSpeedIsNotNull();
         if (!StringUtils.isEmpty(name))

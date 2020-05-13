@@ -13,7 +13,7 @@ import java.util.List;
  * Created by houcheng on 2018/11/25.
  */
 @Service
-public class XScheduleTaskService
+public class ScheduleTaskService
 {
     @Autowired
     ScheduleTaskMapper mapper;

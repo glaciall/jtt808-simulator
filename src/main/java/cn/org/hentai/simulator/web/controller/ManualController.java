@@ -4,10 +4,8 @@ import cn.org.hentai.simulator.entity.Task;
 import cn.org.hentai.simulator.manager.SimulatorManager;
 import cn.org.hentai.simulator.util.Configs;
 import cn.org.hentai.simulator.util.DateUtils;
-import cn.org.hentai.simulator.web.service.XDriverPhotoService;
-import cn.org.hentai.simulator.web.service.XRouteService;
+import cn.org.hentai.simulator.web.service.RouteService;
 import cn.org.hentai.simulator.web.vo.Result;
-import freemarker.template.utility.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,10 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ManualController
 {
     @Autowired
-    XRouteService routeService;
-
-    @Autowired
-    private XDriverPhotoService driverPhotoService;
+    RouteService routeService;
 
     /**
      * 跳转到手工创建任务页面
@@ -69,25 +64,6 @@ public class ManualController
     public Result findRoutes(@RequestParam(required = false) String name,
                              @RequestParam(defaultValue = "1") Integer pageIndex,
                              @RequestParam(defaultValue = "10") Integer pageSize) {
-        return new Result().withData(this.routeService.findPaginate(name, pageIndex, pageSize));
+        return new Result().withData(this.routeService.find(name, pageIndex, pageSize));
     }
-
-
-    /**
-     * 获取分页的照片列表
-     * @param photo
-     * @param pageIndex
-     * @param pageSize
-     * @return
-     */
-    @RequestMapping("/findPhotoList")
-    @ResponseBody
-    public Result photoList(@RequestParam(required = false) Long driverId,
-                            @RequestParam(required = false) String photo,
-                            @RequestParam(defaultValue = "1") int pageIndex,
-                            @RequestParam(defaultValue = "10") int pageSize) {
-        return new Result().withData(this.driverPhotoService.findPaginate(driverId, photo, pageIndex, pageSize));
-    }
-
-
 }

@@ -6,17 +6,16 @@ import cn.org.hentai.simulator.web.entity.Route;
 import cn.org.hentai.simulator.web.entity.RoutePoint;
 import cn.org.hentai.simulator.web.entity.StayPoint;
 import cn.org.hentai.simulator.web.entity.TroubleSegment;
-import cn.org.hentai.simulator.web.service.XRoutePointService;
-import cn.org.hentai.simulator.web.service.XRouteService;
-import cn.org.hentai.simulator.web.service.XStayPointService;
-import cn.org.hentai.simulator.web.service.XTroubleSegmentService;
+import cn.org.hentai.simulator.web.service.RoutePointService;
+import cn.org.hentai.simulator.web.service.RouteService;
+import cn.org.hentai.simulator.web.service.StayPointService;
+import cn.org.hentai.simulator.web.service.TroubleSegmentService;
+import cn.org.hentai.simulator.web.vo.Page;
 import cn.org.hentai.simulator.web.vo.Result;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,28 +32,39 @@ import java.util.List;
 public class RouteController
 {
     @Autowired
-    XRouteService routeService;
+    RouteService routeService;
 
     @Autowired
-    private XRoutePointService routePointService;
+    private RoutePointService routePointService;
 
     @Autowired
-    private XStayPointService stayPointService;
+    private StayPointService stayPointService;
 
     @Autowired
-    private XTroubleSegmentService troubleSegmentService;
+    private TroubleSegmentService troubleSegmentService;
 
-
-
-    /**
-     * 跳转到线路列表
-     * @param model
-     * @return
-     */
-    @RequestMapping("/routeList")
-    public String toRouteList(Model model)
+    @RequestMapping("/index")
+    public String index()
     {
-        return "/route/route-list";
+        return "routes";
+    }
+
+    @RequestMapping("/list")
+    @ResponseBody
+    public Result list(@RequestParam(defaultValue = "1") int pageIndex, @RequestParam(defaultValue = "20") int pageSize)
+    {
+        Result result = new Result();
+        try
+        {
+            Page<Route> routes = routeService.find(null, pageIndex, pageSize);
+
+            result.setData(routes);
+        }
+        catch(Exception ex)
+        {
+            result.setError(ex);
+        }
+        return result;
     }
 
     /**
@@ -69,48 +79,6 @@ public class RouteController
         route.setName("新建线路");
         routeService.create(route);
         return "redirect:/route/edit?id=" + route.getId();
-    }
-
-    /**
-     * 跳转到编辑页面
-     * @param routeId
-     * @param model
-     * @return
-     */
-    @RequestMapping("/edit")
-    public String edit(@RequestParam(name = "id") Long routeId, Model model)
-    {
-        // 在这里可以把停留点、轨迹点、问题路段等全部加载进来，用于编辑处理
-        model.addAttribute("routeId", routeId);
-
-        // 获取线路信息
-        model.addAttribute("route", routeService.getById(routeId));
-        // 获取轨迹点
-        model.addAttribute("routePoints", new Gson().toJson(this.routePointService.find(routeId)).toString());
-        // 获取问题路段
-        model.addAttribute("troubleSegments", new Gson().toJson(this.troubleSegmentService.find(routeId)).toString());
-        // 获取停留点
-        model.addAttribute("stayPoints", new Gson().toJson(this.stayPointService.find(routeId)).toString());
-
-        return "/route/edit";
-    }
-
-    @RequestMapping("/edit2")
-    public String edit2(@RequestParam(name = "id") Long routeId, Model model)
-    {
-        // 在这里可以把停留点、轨迹点、问题路段等全部加载进来，用于编辑处理
-        model.addAttribute("routeId", routeId);
-
-        // 获取线路信息
-        model.addAttribute("route", this.routeService.getById(routeId));
-        // 获取轨迹点
-        model.addAttribute("routePoints", new Gson().toJson(this.routePointService.find(routeId)).toString());
-        // 获取问题路段
-        model.addAttribute("troubleSegments", new Gson().toJson(this.troubleSegmentService.find(routeId)).toString());
-        // 获取停留点
-        model.addAttribute("stayPoints", new Gson().toJson(this.stayPointService.find(routeId)).toString());
-
-        return "/route/edit2";
     }
 
     /**

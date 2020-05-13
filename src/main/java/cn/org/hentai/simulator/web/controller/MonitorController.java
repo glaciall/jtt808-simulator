@@ -4,7 +4,7 @@ import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.entity.TaskInfo;
 import cn.org.hentai.simulator.manager.SimulatorManager;
 import cn.org.hentai.simulator.web.entity.Route;
-import cn.org.hentai.simulator.web.service.XRouteService;
+import cn.org.hentai.simulator.web.service.RouteService;
 import cn.org.hentai.simulator.web.vo.Page;
 import cn.org.hentai.simulator.web.vo.Result;
 import com.google.gson.Gson;
@@ -27,7 +27,7 @@ import java.util.List;
 public class MonitorController
 {
     @Autowired
-    XRouteService routeService;
+    RouteService routeService;
 
     /**
      * 跳转到任务监控页面

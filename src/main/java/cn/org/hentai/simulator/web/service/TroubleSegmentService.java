@@ -13,7 +13,7 @@ import java.util.List;
  * Created by houcheng on 2018/11/25.
  */
 @Service
-public class XTroubleSegmentService
+public class TroubleSegmentService
 {
     @Autowired
     TroubleSegmentMapper mapper;
