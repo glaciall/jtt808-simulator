@@ -15,7 +15,9 @@ import cn.org.hentai.simulator.web.vo.Result;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +44,9 @@ public class RouteController
 
     @Autowired
     private TroubleSegmentService troubleSegmentService;
+
+    @Value("${map.baidu.key}")
+    String baiduMapKey;
 
     @RequestMapping("/index")
     public String index()
@@ -72,13 +77,10 @@ public class RouteController
      * @return
      */
     @RequestMapping("/create")
-    public String create()
+    public String create(Model model)
     {
-        Route route = new Route();
-        route.setId(System.currentTimeMillis());
-        route.setName("新建线路");
-        routeService.create(route);
-        return "redirect:/route/edit?id=" + route.getId();
+        model.addAttribute("baiduMapKey", baiduMapKey);
+        return "route-create";
     }
 
     /**

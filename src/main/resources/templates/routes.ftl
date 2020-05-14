@@ -8,7 +8,7 @@
 <div class="container">
 <#include "inc/sidebar.ftl">
     <div class="content datasheet">
-        <h2>线路管理<button class="btn btn-sm btn-blue pull-right">创建新线路</button></h2>
+        <h2>线路管理<a href="${context}/route/create" class="btn btn-sm btn-blue pull-right">创建新线路</a></h2>
         <hr />
         <div id="route-table">
             <table>
