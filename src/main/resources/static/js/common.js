@@ -136,5 +136,27 @@ $.fn.paginate = function(param)
 
         param.pagination.html(shtml);
         if (param.load) param.load();
+
+        setTimeout(function() {
+            param.pagination.find('a').each(function() {
+                $(this).click(function() {
+                    paginate.parameters.pageIndex = $(this).attr('x-page');
+                    container.paginate(paginate.parameters);
+                });
+            });
+        }, 0);
     });
+}
+
+function toastr(type, text, timeout)
+{
+    if (!timeout) timeout = 5000;
+    $('.toastr').remove();
+    var el = $('<div class="toastr toastr-' + type + '"><span>' + text + '</span></div>');
+    $(document.body).append(el);
+    el.fadeIn();
+    setTimeout(function()
+    {
+        el.fadeOut();
+    }, timeout);
 }

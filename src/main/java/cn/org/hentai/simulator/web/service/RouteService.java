@@ -58,8 +58,8 @@ public class RouteService
         {
             criteria.andNameLike("%" + name + "%");
         }
-
         criteria.example().setPageInfo(pageIndex, pageSize);
+        criteria.example().setOrderByClause(Route.Column.id.desc());
         page.setList(routeMapper.selectByExample(criteria.example()));
         page.setRecordCount(routeMapper.countByExample(criteria.example()));
         return page;

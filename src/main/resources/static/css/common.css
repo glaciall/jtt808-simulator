@@ -307,3 +307,7 @@ table td, table th {
 .icon-close{width:21px;height:21px; cursor: pointer;margin-left: 680px;}
 
 form .x-row { height: 30px; line-height: 30px; }
+
+.toastr { position: absolute; z-index: 10000; top: 20px; right: 20px; padding: 10px 20px 10px 20px; color: #ffffff; display: none; }
+.toastr-success { background-color: rgba(0, 126, 0, 0.8); }
+.toastr-warning { background-color: rgba(250, 0, 0, 0.8); }

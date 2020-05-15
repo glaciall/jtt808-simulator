@@ -352,7 +352,7 @@
         {
             var saddress = prompt("起点", "北京"), eaddress = prompt("终点", "广州");
             if (saddress.length == 0 || eaddress.length == 0)
-                return alert('请输入起点以及终点地址！');
+                return toastr('warning', '请输入起点以及终点地址！');
 
             $('#route-duration').html('-');
             $('#route-distance').html('-');
@@ -387,7 +387,7 @@
                         line.setStrokeColor('#ffffff');
                         points = points.concat(line.getPath());
                     }
-                    if (points.length == 0) return alert('无法完成从 ' + saddress + ' 到 ' + eaddress + ' 的线路规划！');
+                    if (points.length == 0) return toastr('warning', '无法完成从 ' + saddress + ' 到 ' + eaddress + ' 的线路规划！');
 
                     // 点集合
                     for (var i = 0; i < points.length; i++)
@@ -412,7 +412,7 @@
             if (route.points.length == 0) return;
             markMode();
             mode = 'point';
-            alert('请在地图线路附近点击以设置停留点，尽量不超过线路小蓝点50米的距离');
+            toastr('success', '请在地图线路附近点击以设置停留点，尽量不超过线路小蓝点50米的距离');
         });
 
         // 停留点的设值
@@ -443,7 +443,7 @@
             endPoint = null;
             markMode();
             mode = 'segment';
-            alert('请分别点击线路上的小蓝点，以设置问题路段的起点与终点。');
+            toastr('success', '请分别点击线路上的小蓝点，以设置问题路段的起点与终点。');
         });
 
         // 设置路段值
@@ -484,9 +484,9 @@
             var stayPointsJson = toJson(route.stayPoints);
             var segmentsJson = toJson(route.troubleSegments);
 
-            if (name.length == 0) return alert('请输入线路名称');
-            if (isNaN(minSpeed) || isNaN(maxSpeed)) return alert('请输入速度区间'), false;
-            if (route.points.length == 0) return alert('你尚未设定线路轨迹'), false;
+            if (name.length == 0) return toastr('warning', '请输入线路名称');
+            if (isNaN(minSpeed) || isNaN(maxSpeed) || minSpeed.length == 0 || maxSpeed.length == 0) return toastr('warning', '请输入速度区间'), false;
+            if (route.points.length == 0) return toastr('warning', '你尚未设定线路轨迹'), false;
             if (route.stayPoints.length == 0 && !confirm('你未设定停留点，是否继续保存？')) return false;
             if (route.troubleSegments.length == 0 && !confirm('你未设定问题路段，是否继续保存？')) return false;
 
