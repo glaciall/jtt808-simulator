@@ -1,6 +1,7 @@
 package cn.org.hentai.simulator.task;
 
 import cn.org.hentai.simulator.entity.DeviceInfo;
+import cn.org.hentai.simulator.entity.DrivePlan;
 import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.jtt808.JTT808Message;
 import cn.org.hentai.simulator.task.event.EventDispatcher;
@@ -42,12 +43,10 @@ public abstract class AbstractDriveTask implements Driveable
     // netty通道ID，用于发送消息
     private String channelId;
 
-    // TODO： 待发送的报警
+    private DrivePlan drivePlan;
 
     // 日志信息：在调试模式时记录下来
     private Object logs;
-
-    DeviceInfo deviceInfo;
 
     Map<String, String> parameters;
 
@@ -55,14 +54,21 @@ public abstract class AbstractDriveTask implements Driveable
      * 使用参数集settings进行初始化
      * @param settings 参数集名值对
      */
-    public final void init(Map<String, String> settings)
+    public final void init(Map<String, String> settings, DrivePlan plan)
     {
         // 复制一份
+        this.drivePlan = plan;
         this.parameters = new HashMap<>(settings.size());
         for (String key : settings.keySet())
         {
             this.parameters.put(key, settings.get(key));
         }
+    }
+
+    // 获取下一个位置信息
+    public final Point getNextPoint()
+    {
+        return drivePlan.getNextPoint();
     }
 
     // HINT: 整个日志吧，而且要根据当前的模式来决定是不是真的保存下来
@@ -72,6 +78,7 @@ public abstract class AbstractDriveTask implements Driveable
 
         if ("debug".equals(this.mode) == false) return;
         // HOWTO: 保存到什么地方好呢？
+        logger.debug(msg);
     }
 
     /**

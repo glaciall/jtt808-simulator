@@ -31,11 +31,11 @@ public class TaskTest
         AbstractDriveTask[] tasks = new SimpleDriveTask[CONCURRENT];
         for (int i = 0; i < CONCURRENT; i++)
         {
-            settings.put("device.id", String.format("%07d", i));
+            settings.put("device.sn", String.format("%07d", i));
             settings.put("device.sim", String.format("0138%08d", i));
 
             tasks[i] = new SimpleDriveTask();
-            tasks[i].init(settings);
+            tasks[i].init(settings, null);
             tasks[i].startup();
         }
 

@@ -108,7 +108,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.TroubleSegment">
+  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.TroubleSegment" keyProperty="id" useGeneratedKeys="true">
     insert into x_trouble_segment (id, routeId, startIndex, 
       endIndex, eventCode, ratio
       )

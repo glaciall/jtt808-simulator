@@ -1,15 +1,12 @@
 package cn.org.hentai.simulator.manager;
 
-import cn.org.hentai.simulator.entity.Task;
 import cn.org.hentai.simulator.util.BeanUtils;
-import cn.org.hentai.simulator.util.Configs;
 import cn.org.hentai.simulator.util.DateUtils;
 import cn.org.hentai.simulator.util.SIMGenerator;
 import cn.org.hentai.simulator.web.entity.ScheduleTask;
 import cn.org.hentai.simulator.web.service.ScheduleTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -132,8 +129,8 @@ public final class ScheduleTaskManager
             String driverPhoto = null;
 
             // 添加到任务队列里去
-            Task task = new Task(plan.getId(), plan.getRouteId(), plan.getVehicleId(), null, String.valueOf(SIMGenerator.get()), driverPhoto, startTime);
-            SimulatorManager.getInstance().add(task);
+            // Task task = new Task(plan.getId(), plan.getRouteId(), plan.getVehicleId(), null, String.valueOf(SIMGenerator.get()), driverPhoto, startTime);
+            // SimulatorManager.getInstance().add(task);
 
             logger.debug(String.format("Simulator started: %d, %s, %s", plan.getId(), null, DateUtils.format(startTime, fmt)));
         }

@@ -120,6 +120,18 @@ public final class ByteUtils
         return bytes;
     }
 
+    public static byte[] toBCD(String text)
+    {
+        byte[] bcd = new byte[text.length() / 2];
+        for (int i = 0, k = 0; i < text.length(); i+=2)
+        {
+            char a = text.charAt(i);
+            char b = text.charAt(i + 1);
+            bcd[k++] = (byte)((((a - 0x30) << 4) | (b - 0x30)) & 0xff);
+        }
+        return bcd;
+    }
+
     public static int getShort(byte[] data, int offset, int length)
     {
         short val = 0;

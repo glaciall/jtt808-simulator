@@ -1,15 +1,15 @@
 package cn.org.hentai.simulator.entity;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Created by houcheng on 2019/1/6.
  */
-public class DrivePlan
+public class DrivePlan implements Serializable
 {
     LinkedList<Point> routePoints;
-    List<XEvent> events;
 
     public LinkedList<Point> getRoutePoints()
     {
@@ -22,14 +22,9 @@ public class DrivePlan
         return this;
     }
 
-    public List<XEvent> getEvents()
+    public Point getNextPoint()
     {
-        return events;
-    }
-
-    public DrivePlan setEvents(List<XEvent> events)
-    {
-        this.events = events;
-        return this;
+        if (routePoints.isEmpty()) return null;
+        return routePoints.removeFirst();
     }
 }

@@ -116,7 +116,6 @@
     function id() { return nid++; }
 
     var route = {
-        id : 1,
         mileages : 0,
         points : [],
         stayPoints : [],
@@ -490,7 +489,7 @@
             if (route.stayPoints.length == 0 && !confirm('你未设定停留点，是否继续保存？')) return false;
             if (route.troubleSegments.length == 0 && !confirm('你未设定问题路段，是否继续保存？')) return false;
 
-            $.post('${context}/route/save', { id : route.id, name : name, minSpeed : minSpeed, maxSpeed : maxSpeed,
+            $.post('${context}/route/save', { name : name, minSpeed : minSpeed, maxSpeed : maxSpeed,
                 mileages : route.mileages, pointsJsonText : pointsJson, stayPointsJsonText : stayPointsJson, segmentsJsonText : segmentsJson }, function(result)
             {
                 if (result.error && result.error.code) return alert(result.error.reason);

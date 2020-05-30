@@ -1,5 +1,6 @@
 package cn.org.hentai.simulator.task;
 
+import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.jtt808.JTT808Message;
 import cn.org.hentai.simulator.task.event.EventEnum;
 import cn.org.hentai.simulator.task.event.Listen;
@@ -12,6 +13,8 @@ import cn.org.hentai.simulator.util.Packet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -36,6 +39,8 @@ public class SimpleDriveTask extends AbstractDriveTask
 
     // 连接池
     ConnectionPool pool = ConnectionPool.getInstance();
+
+    SimpleDateFormat sdf = new SimpleDateFormat("YYMMddHHmmss");
 
     @Listen(name = EventEnum.message_received)
     public void onServerMessage(JTT808Message msg)
@@ -86,9 +91,9 @@ public class SimpleDriveTask extends AbstractDriveTask
         }
         else
         {
-            String sn = getParameter("device.id");
+            String sn = getParameter("device.sn");
             byte[] vin = new byte[0];
-            try { vin = "京X00001".getBytes("GBK"); } catch(Exception ex) { }
+            try { vin = getParameter("vehicle.number").getBytes("GBK"); } catch(Exception ex) { }
 
             JTT808Message msg = new JTT808Message();
             msg.id = 0x0100;
@@ -131,7 +136,7 @@ public class SimpleDriveTask extends AbstractDriveTask
     public void startup()
     {
         EventDispatcher.register(this);
-        connectionId = pool.connect("localhost", 20021, this);
+        connectionId = pool.connect(getParameter("server.address"), Integer.parseInt(getParameter("server.port")), this);
     }
 
     // 开始正常会话，发送心跳与位置
@@ -158,12 +163,33 @@ public class SimpleDriveTask extends AbstractDriveTask
 
     public void reportLocation()
     {
-        logger.debug("{}: report location...", getParameter("device.id"));
+        logger.debug("{}: report location...", getParameter("device.sn"));
+        Point point = getNextPoint();
+        if (point == null)
+        {
+            // TODO: 终止行驶，需要关闭连接，停止定时器等
+            return;
+        }
+        JTT808Message msg = new JTT808Message();
+        msg.id = 0x0200;
+        Packet p = Packet.create(128)
+                .addInt(point.getWarnFlags())                                                   // DWORD, 报警标志位
+                .addInt(point.getStatus())                                                      // DWORD，状态
+                .addInt((int)(point.getLatitude() * 100_0000))                                  // DWORD，纬度
+                .addInt((int)(point.getLongitude() * 100_0000))                                 // DWORD，经度
+                .addShort((short)0)                                                             // WORD，海拔
+                .addShort((short)(point.getSpeed() * 10))                                       // WORD，速度
+                .addShort((short)point.getDirection())                                          // WORD，方向，暂未计算
+                .addBytes(ByteUtils.toBCD(sdf.format(new Date(point.getReportTime()))))         // BCD[6]，时间
+        ;
+        // TODO: 增加附加信息
+        msg.body = p.getBytes();
+        send(msg);
     }
 
     public void heartbeat()
     {
-        logger.debug("{}: heartbeat...", getParameter("device.id"));
+        logger.debug("{}: heartbeat...", getParameter("device.sn"));
     }
 
     @Override

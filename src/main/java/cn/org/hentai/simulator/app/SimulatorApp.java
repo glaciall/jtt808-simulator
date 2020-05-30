@@ -1,5 +1,6 @@
 package cn.org.hentai.simulator.app;
 
+import cn.org.hentai.simulator.manager.RouteManager;
 import cn.org.hentai.simulator.task.event.EventDispatcher;
 import cn.org.hentai.simulator.task.eventloop.RunnerManager;
 import cn.org.hentai.simulator.task.net.ConnectionPool;
@@ -31,6 +32,8 @@ public class SimulatorApp
         ApplicationContext context = SpringApplication.run(SimulatorApp.class, args);
         BeanUtils.init(context);
         Configs.init(context);
+
+        RouteManager.getInstance().init();
 
         RunnerManager.init();
         EventDispatcher.init();

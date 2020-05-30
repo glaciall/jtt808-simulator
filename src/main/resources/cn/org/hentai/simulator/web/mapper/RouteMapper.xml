@@ -108,7 +108,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.Route">
+  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.Route" keyProperty="id" useGeneratedKeys="true">
     insert into x_route (id, name, minSpeed, 
       maxSpeed, mileages, fingerPrint)
     values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{minSpeed,jdbcType=INTEGER}, 

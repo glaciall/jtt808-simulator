@@ -13,117 +13,123 @@ public class Point implements Serializable
     /**
      * 经度
      */
-    private Double longitude;
+    private double longitude;
 
     /**
      * 纬度
      */
-    private Double latitude;
+    private double latitude;
 
     /**
      * 到达时间
      */
-    private Long reportTime;
-
-    /**
-     * 事件
-     * 如果未发生事件，不上报
-     */
-    private String event;
+    private long reportTime;
 
     /**
      * 速度
      */
-    private Float speed;
+    private float speed;
 
     /**
      * 方向
      */
-    private String direction;
+    private int direction;
 
     /**
      * 报警状态位
      */
-    private Integer warnFlags;
+    private int warnFlags;
 
     /**
      * 车辆状态位
      */
-    private Integer status;
+    private int status;
 
-    public Double getLongitude() {
+    private boolean isStay;
+
+    public boolean isStay()
+    {
+        return isStay;
+    }
+
+    public void setStay(boolean stay)
+    {
+        isStay = stay;
+    }
+
+    public double getLongitude()
+    {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(double longitude)
+    {
         this.longitude = longitude;
     }
 
-    public Double getLatitude() {
+    public double getLatitude()
+    {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(double latitude)
+    {
         this.latitude = latitude;
     }
 
-    public Long getReportTime() {
+    public long getReportTime()
+    {
         return reportTime;
     }
 
-    public void setReportTime(Long reportTime) {
+    public void setReportTime(long reportTime)
+    {
         this.reportTime = reportTime;
     }
 
-    public String getEvent() {
-        return event;
-    }
-
-    public void setEvent(String event) {
-        this.event = event;
-    }
-
-    public Float getSpeed() {
+    public float getSpeed()
+    {
         return speed;
     }
 
-    public void setSpeed(Float speed) {
+    public void setSpeed(float speed)
+    {
         this.speed = speed;
     }
 
-    public String getDirection() {
+    public int getDirection()
+    {
         return direction;
     }
 
-    public void setDirection(String direction) {
+    public void setDirection(int direction)
+    {
         this.direction = direction;
     }
 
-    public Integer getWarnFlags()
+    public int getWarnFlags()
     {
         return warnFlags;
     }
 
-    public Point setWarnFlags(Integer warnFlags)
+    public void setWarnFlags(int warnFlags)
     {
         this.warnFlags = warnFlags;
-        return this;
     }
 
-    public Integer getStatus()
+    public int getStatus()
     {
         return status;
     }
 
-    public Point setStatus(Integer status)
+    public void setStatus(int status)
     {
         this.status = status;
-        return this;
     }
 
     @Override
     public String toString()
     {
-        return "Point{" + "longitude=" + longitude + ", latitude=" + latitude + ", reportTime=" + reportTime + ", event='" + event + '\'' + ", speed=" + speed + ", direction='" + direction + '\'' + '}';
+        return "Point{" + "longitude=" + longitude + ", latitude=" + latitude + ", reportTime=" + reportTime + ", speed=" + speed + ", direction='" + direction + '\'' + '}';
     }
 }

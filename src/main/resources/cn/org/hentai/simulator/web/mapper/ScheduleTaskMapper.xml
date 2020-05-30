@@ -165,7 +165,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.ScheduleTask">
+  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.ScheduleTask" keyProperty="id" useGeneratedKeys="true">
     insert into x_schedule_task (id, routeId, driverId, 
       vehicleId, fromTime, endTime, 
       ratio, daysInterval, driveCount, 

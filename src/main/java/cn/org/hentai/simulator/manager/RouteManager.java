@@ -57,9 +57,6 @@ public final class RouteManager
         RouteService routeService = null;
         try
         {
-            // 安全事件分类初始化/缓存
-            EventCache.init();
-
             routeService = BeanUtils.create(RouteService.class);
             List<Route> routes = routeService.list();
             for (Route route : routes)
@@ -150,7 +147,7 @@ public final class RouteManager
         }
         catch(Exception ex)
         {
-            logger.error("", ex);
+            logger.error("route load failed", ex);
         }
         finally
         {
@@ -175,21 +172,20 @@ public final class RouteManager
         // 行驶速度随机化、轨迹点随机化、确定每一个点的到达时间
         points = routeRandomize(positionList, route.getMinSpeed(), route.getMaxSpeed());
 
-        // 产生安全事件
-        generateEvents(points, route.getTroubleSegmentList());
+        // 产生报警事件
+        // generateEvents(points, route.getTroubleSegmentList());
 
         // 生成停留点，并且修正上报时间
-        // 同时完善安全事件信息
-        List<XEvent> eventList = generateStayPoints(startTime, points, route.getVehicleStayPointList());
+        // TODO: 同时完善安全事件信息
+        generateStayPoints(startTime, points, route.getVehicleStayPointList());
 
         DrivePlan plan = new DrivePlan();
         plan.setRoutePoints(points);
-        plan.setEvents(eventList);
 
         return plan;
     }
 
-    // 创建安全事件
+    // TODO: 创建报警事件，暂时先屏蔽掉
     private void generateEvents(LinkedList<Point> points, List<XTroubleSegment> troubleSegmentList)
     {
         if (troubleSegmentList.size() == 0) return;
@@ -213,8 +209,7 @@ public final class RouteManager
                 if (Math.random() * 100 < segment.getRatio())
                 {
                     // 获取此问题路段的安全事件
-                    point.setEvent(segment.getEvent());
-                    // troubleSegmentList.set(k, null);
+                    // TODO: point.setEvent(segment.getEvent());
                     eindex += 1;
                 }
             }
@@ -222,7 +217,7 @@ public final class RouteManager
     }
 
     // 创建停留点
-    private List<XEvent> generateStayPoints(Date startTime, LinkedList<Point> points, List<XStayPoint> vehicleStayPointList)
+    private void generateStayPoints(Date startTime, LinkedList<Point> points, List<XStayPoint> vehicleStayPointList)
     {
         int sindex = 0;
         for (int i = 0; i < points.size(); )
@@ -290,11 +285,13 @@ public final class RouteManager
             {
                 double r1 = (Math.random() * 20 - 10) * Math.pow(10, -5);
                 double r2 = (Math.random() * 20 - 10) * Math.pow(10, -5);
+                // TODO: 这个15000需要跟下一个循环体里的15000同样的来源
                 m += 15000;
                 Point newPoint = new Point();
                 newPoint.setLongitude(newLng + r1);
                 newPoint.setLatitude(newLat + r2);
-                newPoint.setEvent("stay");
+                newPoint.setSpeed(0);
+                newPoint.setStay(true);
                 points.add(i, newPoint);
                 i += 1;
             }
@@ -302,62 +299,18 @@ public final class RouteManager
         }
         // System.out.println("***************************************************************************************************");
 
-        List<XEvent> eventList = new LinkedList();
+        // 修正轨迹点的上报时间
         long time = startTime.getTime();
         for (Point point : points)
         {
-            boolean isStayPoint = "stay".equals(point.getEvent());
+            // TODO: 这里的时间间隔，需要由用户设置值来决定
             time += 5000;
-            if (isStayPoint)
+            if (point.isStay())
             {
-                point.setEvent(null);
-                time += 10000;
-            }
-            if (point.getEvent() != null)
-            {
-                // 将安全事件大类转为小类，从大类里随机取一个作为确定的安全事件
-                String eventTypeCode = point.getEvent();
-                String eventCode = EventCache.get(eventTypeCode).getCode();
-                point.setEvent(null);
-
-                // 事件的开始、结束
-                int time1 = 0, time2 = 0, duration = 0;
-                if ("e-danger".equals(eventTypeCode))
-                {
-                    time1 = (int)(10 + Math.random() * 10);
-                    time2 = (int)(2 + Math.random() * 5);
-                    duration = (int)Math.max(time1, Math.random() * 60);
-                }
-                else
-                {
-                    duration = (int)(Math.random() * 15);
-                }
-                int seq = (sequence++) & 0xffff;
-                XEvent e = new XEvent()
-                        .setCode(eventCode)
-                        .setReportTime(time)
-                        .setType(1)
-                        .setTime1(0)
-                        .setTime2(0)
-                        .setLongitude(point.getLongitude())
-                        .setLatitude(point.getLatitude())
-                        .setSpeed(point.getSpeed())
-                        .setSequence(seq);
-                eventList.add(e);
-
-                e = new XEvent()
-                        .setCode(eventCode)
-                        .setReportTime(time + duration * 1000)
-                        .setType(2)
-                        .setTime1(time1)
-                        .setTime2(time2)
-                        .setSequence(seq);
-                eventList.add(e);
+                time += 15000;
             }
             point.setReportTime(time);
         }
-
-        return eventList;
     }
 
     // 轨迹点随机化
@@ -424,6 +377,7 @@ public final class RouteManager
                 p.setLongitude(pt.getLongitude());
                 p.setLatitude(pt.getLatitude());
                 p.setSpeed((float)(speed * 3600 / 1000));
+                // TODO: 计算方向，正北为0，顺时针方向
                 points.add(p);
                 break;
             }
@@ -477,59 +431,5 @@ public final class RouteManager
         }
 
         return new Position(x, y);
-    }
-
-    // 安全事件缓存
-    private static class EventCache
-    {
-        private static List<Event> dangerEvents, tireEvents, illegalEvents, adasWarnings, vehicleHitches, deviceHitches, platformEvents;
-
-        public static void setCache(String type, List<Event> events)
-        {
-            switch (type)
-            {
-                case "e-danger" : dangerEvents = events; break;
-                case "e-tire" : tireEvents = events; break;
-                case "e-illegal" : illegalEvents = events; break;
-                case "e-adas" : adasWarnings = events; break;
-                case "e-vhitch" : vehicleHitches = events; break;
-                case "e-dhitch" : deviceHitches = events; break;
-                case "e-platform" : platformEvents = events; break;
-                default : throw new RuntimeException("unknown event type: " + type);
-            }
-        }
-
-        public static void init()
-        {
-            try
-            {
-                String[] types = new String[] { "e-illegal", "e-danger", "e-tire", "e-adas", "e-vhitch", "e-dhitch", "e-platform" };
-                for (String type : types)
-                {
-                    setCache(type, null);
-                }
-            }
-            catch(Exception e)
-            {
-                logger.error("安全事件分类初始化/缓存异常！", e);
-            }
-        }
-
-        public static Event get(String type)
-        {
-            List<Event> events = null;
-            switch (type)
-            {
-                case "e-danger" : events = dangerEvents; break;
-                case "e-tire" : events = tireEvents; break;
-                case "e-illegal" : events = illegalEvents; break;
-                case "e-adas" : events = adasWarnings; break;
-                case "e-vhitch" : events = vehicleHitches; break;
-                case "e-dhitch" : events = deviceHitches; break;
-                case "e-platform" : events = platformEvents; break;
-                default : throw new RuntimeException("unknown event type: " + type);
-            }
-            return events.get((int)(Math.random() * events.size()));
-        }
     }
 }

@@ -106,7 +106,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.RoutePoint">
+  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.RoutePoint" keyProperty="id" useGeneratedKeys="true">
     insert into x_route_point (id, routeId, longitude, 
       latitude)
     values (#{id,jdbcType=BIGINT}, #{routeId,jdbcType=BIGINT}, #{longitude,jdbcType=DOUBLE}, 

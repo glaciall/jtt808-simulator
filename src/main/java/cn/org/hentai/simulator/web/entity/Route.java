@@ -155,6 +155,12 @@ public class Route implements Serializable {
         return this;
     }
 
+    public Integer getKilometers()
+    {
+        if (this.mileages == null) return null;
+        else return this.mileages / 1000;
+    }
+
     /**
      * This method sets the value of the database column x_route.mileages
      *

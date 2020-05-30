@@ -109,7 +109,7 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.StayPoint">
+  <insert id="insert" parameterType="cn.org.hentai.simulator.web.entity.StayPoint" keyProperty="id" useGeneratedKeys="true">
     insert into x_stay_point (id, routeid, longitude, 
       latitude, minTime, maxTime, 
       ratio)

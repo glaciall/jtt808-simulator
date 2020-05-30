@@ -1,5 +1,6 @@
 package cn.org.hentai.simulator.web.controller;
 
+import cn.org.hentai.simulator.entity.DrivePlan;
 import cn.org.hentai.simulator.manager.RouteManager;
 import cn.org.hentai.simulator.util.MD5;
 import cn.org.hentai.simulator.web.entity.Route;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -64,8 +66,7 @@ public class RouteController
             Page<Route> routes = routeService.find(null, pageIndex, pageSize);
 
             result.setData(routes);
-        }
-        catch(Exception ex)
+        } catch (Exception ex)
         {
             result.setError(ex);
         }
@@ -74,6 +75,7 @@ public class RouteController
 
     /**
      * 创建线路并跳转到编辑页面
+     *
      * @return
      */
     @RequestMapping("/create")
@@ -85,7 +87,7 @@ public class RouteController
 
     /**
      * 保存线路信息、 轨迹点、停留点、问题路段
-     * @param id
+     *
      * @param name
      * @param minSpeed
      * @param maxSpeed
@@ -97,8 +99,7 @@ public class RouteController
      */
     @RequestMapping("/save")
     @ResponseBody
-    public Result save(@RequestParam Long id,
-                       @RequestParam String name,
+    public Result save(@RequestParam String name,
                        @RequestParam Integer minSpeed,
                        @RequestParam Integer maxSpeed,
                        @RequestParam Integer mileages,
@@ -110,11 +111,7 @@ public class RouteController
         try
         {
             // 根据线路ID获取信息
-            Route route = this.routeService.getById(id);
-            if (route == null) {
-                return result;
-            }
-            // 更新线路信息
+            Route route = new Route();
             route.setName(name);
             route.setMinSpeed(minSpeed);
             route.setMaxSpeed(maxSpeed);
@@ -130,15 +127,20 @@ public class RouteController
             String fingerPrint = MD5.encode(signature.toString());
             route.setFingerPrint(fingerPrint);
 
-            this.routeService.update(route);
+            routeService.create(route);
+
+            long id = route.getId();
 
             // 添加原轨迹点
             List<RoutePoint> points = null;
             if (!StringUtils.isEmpty(pointsJsonText))
             {
-                points = new Gson().fromJson(pointsJsonText, new TypeToken<List<RoutePoint>>() {}.getType());
+                points = new Gson().fromJson(pointsJsonText, new TypeToken<List<RoutePoint>>()
+                {
+                }.getType());
             }
-            if (points != null) {
+            if (points != null)
+            {
                 for (RoutePoint point : points)
                 {
                     point.setLatitude(point.getLat());
@@ -150,11 +152,16 @@ public class RouteController
 
             // 添加停留点
             List<StayPoint> stayPoints = null;
-            if (!StringUtils.isEmpty(stayPointsJsonText)) {
-                stayPoints = new Gson().fromJson(stayPointsJsonText, new TypeToken<List<StayPoint>>(){}.getType());
+            if (!StringUtils.isEmpty(stayPointsJsonText))
+            {
+                stayPoints = new Gson().fromJson(stayPointsJsonText, new TypeToken<List<StayPoint>>()
+                {
+                }.getType());
             }
-            if (stayPoints != null) {
-                for (StayPoint stayPoint : stayPoints) {
+            if (stayPoints != null)
+            {
+                for (StayPoint stayPoint : stayPoints)
+                {
                     stayPoint.setId(null);
                     stayPoint.setRouteid(id);
                 }
@@ -163,11 +170,16 @@ public class RouteController
 
             // 添加问题路段
             List<TroubleSegment> troubleSegments = null;
-            if (!StringUtils.isEmpty(segmentsJsonText)) {
-                troubleSegments = new Gson().fromJson(segmentsJsonText, new TypeToken<List<TroubleSegment>>() {}.getType());
+            if (!StringUtils.isEmpty(segmentsJsonText))
+            {
+                troubleSegments = new Gson().fromJson(segmentsJsonText, new TypeToken<List<TroubleSegment>>()
+                {
+                }.getType());
             }
-            if (troubleSegments != null) {
-                for (TroubleSegment segment : troubleSegments) {
+            if (troubleSegments != null)
+            {
+                for (TroubleSegment segment : troubleSegments)
+                {
                     segment.setId(null);
                     segment.setRouteId(id);
                 }
@@ -176,8 +188,7 @@ public class RouteController
 
             // 更新内存中的线路缓存
             RouteManager.getInstance().load(route);
-        }
-        catch(Exception e)
+        } catch (Exception e)
         {
             result.setError(e);
         }
