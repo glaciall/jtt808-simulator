@@ -77,7 +77,7 @@ public void onCameraCaptureCommand(JTT808Message msg)
 ```
 
 ##### 3. 事件触发后的回调处理
-因为在分派 **LoopRunner** 时，是按照 **AbstractDriveTask** 的 **hashcode** 进行分配线程，所以每一个 **AbstractDriveTask** 的方法，除了 **init()** 方法外，都是在同一个线程之中（包括定时/延时任务），大可不必担心线程安全问题。
+因为在分派 **LoopRunner** 时，是按照 **AbstractDriveTask** 的 **hashcode** 进行分配线程，所以每一个 **AbstractDriveTask** 的方法，除了 **init()** 和 **startup** 方法外，都是在同一个线程之中（包括定时/延时任务），大可不必担心线程安全问题。
 
 #### 定时/延时任务
 目前提供了定时/延时任务的API，定时/延时任务的执行，也是由 **LoopRunner** 线程运行，它与上一章节的事件执行处于同一个线程之中，不需要关心线程安全问题，方法原型定义如下：
