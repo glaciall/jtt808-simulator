@@ -61,7 +61,7 @@
         <div class="x-row">
             <div class="x-col-2 text-right">&nbsp;</div>
             <div class="x-col-6">
-                <button class="btn btn-blue">启动</button>
+                <button class="btn btn-blue" id="btn-run">启动</button>
             </div>
             <div class="x-clearfix"></div>
         </div>
@@ -69,4 +69,25 @@
 </div>
 </body>
 <#include "inc/footer.ftl">
+<script type="text/javascript">
+    $(document).ready(function()
+    {
+        $('#btn-run').click(function()
+        {
+            var params = {
+                routeId : $('#routeId').val(),
+                vehicleNumber : $('#vehicleNumber').val(),
+                deviceSn : $('#deviceSn').val(),
+                simNumber : $('#simNumber').val(),
+                serverAddress : $('#serverAddress').val(),
+                serverPort : $('#serverPort').val()
+            };
+            $.post('./run', params, function(result)
+            {
+                if (result.error) return toastr('error', result.reason);
+                else toastr('success', '启动成功');
+            });
+        });
+    });
+</script>
 </html>

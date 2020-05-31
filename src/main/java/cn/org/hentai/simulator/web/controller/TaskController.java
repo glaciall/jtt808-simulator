@@ -12,6 +12,7 @@ import cn.org.hentai.simulator.web.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -53,22 +54,42 @@ public class TaskController
         Result result = new Result();
         try
         {
+            if (StringUtils.isEmpty(vehicleNumber) || vehicleNumber.matches("^[\u4e00-\u9fa5]\\w{6,7}$") == false)
+                throw new RuntimeException("请填写正确的车牌号");
+
+            if (StringUtils.isEmpty(deviceSn) || deviceSn.matches("^\\w{7,30}$") == false)
+                throw new RuntimeException("请填写正确的终端ID");
+
+            if (StringUtils.isEmpty(simNumber) || simNumber.matches("^\\d{11,12}$") == false)
+                throw new RuntimeException("请填写正确的终端ID");
+
+            if (StringUtils.isEmpty(serverPort) || serverPort.matches("^\\d{1,5}$") == false)
+                throw new RuntimeException("请填写正确的服务器端口");
+
+            if (simNumber.length() < 12) simNumber = ("0000000000000" + simNumber).replaceAll("^0+(\\d{12})$", "$1");
+
+            final String sim = simNumber;
+
             Map<String, String> params = new HashMap()
             {
                 {
                     put("vehicle.number", vehicleNumber);
                     put("device.sn", deviceSn);
-                    put("device.sim", simNumber);
+                    put("device.sim", sim);
                     put("server.address", serverAddress);
                     put("server.port", serverPort);
                     put("mode", "debug");
                 }
             };
 
+            // TODO: 需要检查一下是不是有冲突~~~
+
             DrivePlan plan = RouteManager.getInstance().generate(routeId, new Date());
             SimpleDriveTask task = new SimpleDriveTask();
             task.init(params, plan);
             task.startup();
+
+            System.out.println("走你~~~");
         }
         catch(Exception ex)
         {
