@@ -1,8 +1,8 @@
 package cn.org.hentai.simulator.task.event;
 
 import cn.org.hentai.simulator.task.AbstractDriveTask;
-import cn.org.hentai.simulator.task.eventloop.RunnerManager;
-import cn.org.hentai.simulator.task.eventloop.Executable;
+import cn.org.hentai.simulator.task.runner.RunnerManager;
+import cn.org.hentai.simulator.task.runner.Executable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by matrixy on 2020/5/10.
+ * Created by matrixy when 2020/5/10.
  * 本类负责将AbstractDriveTask所触发的事件，分发到各成员方法上
  */
 public final class EventDispatcher
@@ -71,7 +71,7 @@ public final class EventDispatcher
         {
             Listen anno = m.getAnnotation(Listen.class);
             if (anno == null) continue;
-            listenerMap.put(className + ":::" + anno.name() + ":::" + anno.attachment(), m);
+            listenerMap.put(className + ":::" + anno.when() + ":::" + anno.attachment(), m);
         }
     }
 

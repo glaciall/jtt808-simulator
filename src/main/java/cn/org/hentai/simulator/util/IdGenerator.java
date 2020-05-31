@@ -3,7 +3,7 @@ package cn.org.hentai.simulator.util;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Created by houcheng on 2018/12/3.
+ * Created by houcheng when 2018/12/3.
  */
 public final class IdGenerator
 {

@@ -4,7 +4,7 @@ import cn.org.hentai.simulator.util.ByteHolder;
 import cn.org.hentai.simulator.util.Packet;
 
 /**
- * Created by houcheng on 2018/7/1.
+ * Created by houcheng when 2018/7/1.
  */
 public final class JTT808Decoder
 {

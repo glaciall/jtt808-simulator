@@ -6,7 +6,7 @@ import org.springframework.core.env.Environment;
 import java.io.File;
 
 /**
- * Created by matrixy on 2017/8/14.
+ * Created by matrixy when 2017/8/14.
  */
 public final class Configs
 {

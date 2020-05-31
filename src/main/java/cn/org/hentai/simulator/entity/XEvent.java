@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created by houcheng on 2019/1/6.
+ * Created by houcheng when 2019/1/6.
  */
 public class XEvent implements Serializable
 {

@@ -1,7 +1,7 @@
 package cn.org.hentai.simulator.util;
 
 /**
- * Created by Expect on 2017/12/25.
+ * Created by Expect when 2017/12/25.
  */
 public final class Nonce
 {

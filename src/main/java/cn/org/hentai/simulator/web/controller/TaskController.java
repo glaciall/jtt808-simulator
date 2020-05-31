@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by houcheng on 2018/11/25.
+ * Created by houcheng when 2018/11/25.
  * 线路计划任务控制器
  */
 @Controller
@@ -88,8 +88,6 @@ public class TaskController
             SimpleDriveTask task = new SimpleDriveTask();
             task.init(params, plan);
             task.startup();
-
-            System.out.println("走你~~~");
         }
         catch(Exception ex)
         {

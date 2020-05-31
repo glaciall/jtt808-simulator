@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * Created by houcheng on 2018/12/2.
+ * Created by houcheng when 2018/12/2.
  * 计划任务管理器，与数据库保持同步，生成行程计划
  */
 public final class ScheduleTaskManager

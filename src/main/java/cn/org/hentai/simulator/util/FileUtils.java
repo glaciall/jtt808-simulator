@@ -3,7 +3,7 @@ package cn.org.hentai.simulator.util;
 import java.io.*;
 
 /**
- * Created by matrixy on 2019/8/25.
+ * Created by matrixy when 2019/8/25.
  */
 public final class FileUtils
 {

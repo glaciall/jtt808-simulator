@@ -5,7 +5,7 @@ import cn.org.hentai.simulator.util.Packet;
 import java.io.OutputStream;
 
 /**
- * Created by matrixy on 2018-08-12.
+ * Created by matrixy when 2018-08-12.
  */
 public final class JTT808Encoder
 {

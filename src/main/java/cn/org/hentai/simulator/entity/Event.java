@@ -1,7 +1,7 @@
 package cn.org.hentai.simulator.entity;
 
 /**
- * Created by matrixy on 2019-11-04.
+ * Created by matrixy when 2019-11-04.
  */
 public class Event
 {

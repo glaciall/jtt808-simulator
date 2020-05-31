@@ -1,7 +1,8 @@
 package cn.org.hentai.simulator.jtt808;
 
 /**
- * Created by houcheng on 2018/7/1.
+ * Created by houcheng when 2018/7/1.
+ * TODO: 此类应该作为抽象类，需要由子类来实现2013版或2019版的定义，便于编解码的分离和协议的切换和兼容
  */
 public class JTT808Message
 {

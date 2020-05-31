@@ -2,7 +2,7 @@ package cn.org.hentai.simulator.app;
 
 import cn.org.hentai.simulator.manager.RouteManager;
 import cn.org.hentai.simulator.task.event.EventDispatcher;
-import cn.org.hentai.simulator.task.eventloop.RunnerManager;
+import cn.org.hentai.simulator.task.runner.RunnerManager;
 import cn.org.hentai.simulator.task.net.ConnectionPool;
 import cn.org.hentai.simulator.util.BeanUtils;
 import cn.org.hentai.simulator.util.Configs;
@@ -17,7 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import java.util.TimeZone;
 
 /**
- * Created by matrixy on 2019/8/13.
+ * Created by matrixy when 2019/8/13.
  */
 @ComponentScan(value = {"cn.org.hentai"})
 @MapperScan(basePackages = "cn.org.hentai")

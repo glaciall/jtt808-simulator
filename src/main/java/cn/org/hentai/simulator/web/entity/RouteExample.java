@@ -243,72 +243,72 @@ public class RouteExample {
         }
 
         public Criteria andNameIsNull() {
-            addCriterion("name is null");
+            addCriterion("when is null");
             return (Criteria) this;
         }
 
         public Criteria andNameIsNotNull() {
-            addCriterion("name is not null");
+            addCriterion("when is not null");
             return (Criteria) this;
         }
 
         public Criteria andNameEqualTo(String value) {
-            addCriterion("name =", value, "name");
+            addCriterion("when =", value, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameNotEqualTo(String value) {
-            addCriterion("name <>", value, "name");
+            addCriterion("when <>", value, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameGreaterThan(String value) {
-            addCriterion("name >", value, "name");
+            addCriterion("when >", value, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameGreaterThanOrEqualTo(String value) {
-            addCriterion("name >=", value, "name");
+            addCriterion("when >=", value, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameLessThan(String value) {
-            addCriterion("name <", value, "name");
+            addCriterion("when <", value, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameLessThanOrEqualTo(String value) {
-            addCriterion("name <=", value, "name");
+            addCriterion("when <=", value, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameLike(String value) {
-            addCriterion("name like", value, "name");
+            addCriterion("when like", value, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameNotLike(String value) {
-            addCriterion("name not like", value, "name");
+            addCriterion("when not like", value, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameIn(List<String> values) {
-            addCriterion("name in", values, "name");
+            addCriterion("when in", values, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameNotIn(List<String> values) {
-            addCriterion("name not in", values, "name");
+            addCriterion("when not in", values, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameBetween(String value1, String value2) {
-            addCriterion("name between", value1, value2, "name");
+            addCriterion("when between", value1, value2, "when");
             return (Criteria) this;
         }
 
         public Criteria andNameNotBetween(String value1, String value2) {
-            addCriterion("name not between", value1, value2, "name");
+            addCriterion("when not between", value1, value2, "when");
             return (Criteria) this;
         }
 
@@ -493,7 +493,7 @@ public class RouteExample {
         }
 
         public Criteria andNameLikeInsensitive(String value) {
-            addCriterion("upper(name) like", value.toUpperCase(), "name");
+            addCriterion("upper(when) like", value.toUpperCase(), "when");
             return (Criteria) this;
         }
     }

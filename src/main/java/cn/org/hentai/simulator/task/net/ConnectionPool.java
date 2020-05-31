@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by matrixy on 2020/4/30.
+ * Created by matrixy when 2020/4/30.
  */
 public class ConnectionPool
 {
@@ -58,6 +58,7 @@ public class ConnectionPool
             });
     }
 
+    // 连接到目标服务器
     public String connect(String address, int port, AbstractDriveTask watcher)
     {
         Channel chl = bootstrap.connect(address, port).channel();
@@ -65,6 +66,14 @@ public class ConnectionPool
         return chl.id().asLongText();
     }
 
+    // 关闭连接
+    public void close(String channelId)
+    {
+        Connection conn = connections.remove(channelId);
+        if (conn != null) conn.channel.close();
+    }
+
+    // 发送消息
     public void send(String channelId, Object data) throws Exception
     {
         Connection conn = connections.get(channelId);
@@ -72,6 +81,7 @@ public class ConnectionPool
         else throw new SocketException("connection closed");
     }
 
+    // 当连接通道接收到消息时的通知
     protected void notify(String tag, String channelId, String messageId, Object data)
     {
         logger.debug("notify -> channel: {}, tag: {}", channelId, tag);
@@ -87,6 +97,7 @@ public class ConnectionPool
         }
     }
 
+    // 彻底关闭，用于进程退出时
     public void shutdown() throws Exception
     {
         group.shutdownGracefully().sync();

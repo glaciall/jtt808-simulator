@@ -1,6 +1,7 @@
-package cn.org.hentai.simulator.task.eventloop;
+package cn.org.hentai.simulator.task.runner;
 
 import cn.org.hentai.simulator.task.AbstractDriveTask;
+import cn.org.hentai.simulator.task.TaskState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +10,7 @@ import java.util.LinkedList;
 import java.util.TreeSet;
 
 /**
- * Created by matrixy on 2020/5/8.
+ * Created by matrixy when 2020/5/8.
  * EventLoop运行线程
  */
 public class LoopRunner extends Thread
@@ -23,6 +24,9 @@ public class LoopRunner extends Thread
     private TreeSet<ExecutableTask> tasks;
 
     private Object lock;
+
+    // 下一次执行的时间，也就是休眠到这个时间为止
+    private long nextExecuteTime = 0L;
 
     public LoopRunner()
     {
@@ -56,6 +60,8 @@ public class LoopRunner extends Thread
         synchronized (lock)
         {
             tasks.add(task);
+            // 如果需要执行的时间是在线程休眠时间前，那需要唤醒线程
+            if (task.executeTime < nextExecuteTime) lock.notify();
         }
     }
 
@@ -89,7 +95,12 @@ public class LoopRunner extends Thread
 
                 if (jobs.isEmpty())
                 {
-                    Thread.sleep(Math.max(ms, 1));
+                    synchronized (lock)
+                    {
+                        ms = Math.max(ms, 1);
+                        nextExecuteTime = System.currentTimeMillis() + ms;
+                        lock.wait(ms);
+                    }
                     continue;
                 }
 
@@ -98,6 +109,9 @@ public class LoopRunner extends Thread
                 {
                     try
                     {
+                        // 跳过已经终止的行程任务
+                        if (task.driveTask.getState().equals(TaskState.terminated) == true) continue;
+
                         task.executable.execute(task.driveTask);
                         if (task.interval > 0)
                         {

@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Created by matrixy on 2020/5/8.
+ * Created by matrixy when 2020/5/8.
  * 车载终端信息
  */
 public class DeviceInfo implements Serializable

@@ -5,14 +5,18 @@ import cn.org.hentai.simulator.util.Packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 /**
- * Created by matrixy on 2020/5/10.
+ * Created by matrixy when 2020/5/10.
  */
 public class JT808MessageDecoder extends ByteToMessageDecoder
 {
+    static Logger logger = LoggerFactory.getLogger(JT808MessageDecoder.class);
+
     // 缓冲区，消息体长度最大10位，再加上消息结构
     byte[] buffer = new byte[1024 + 32];
 
@@ -43,7 +47,8 @@ public class JT808MessageDecoder extends ByteToMessageDecoder
                 byte c = packet.nextByte();
                 if (crc != c)
                 {
-                    throw new RuntimeException(String.format("invalid crc checksum, expect: %04x, receive: %04x", crc, c));
+                    // throw new RuntimeException(String.format("invalid crc checksum, expect: %04x, receive: %04x", crc, c));
+                    logger.error(String.format("invalid crc checksum, expect: %04x, receive: %04x", crc, c));
                 }
 
                 query.seek(0);

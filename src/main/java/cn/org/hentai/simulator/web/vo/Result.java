@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by matrixy on 2017/8/26.
+ * Created by matrixy when 2017/8/26.
  */
 public class Result
 {

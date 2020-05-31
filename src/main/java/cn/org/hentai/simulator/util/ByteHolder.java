@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 /**
- * Created by matrixy on 2018-06-15.
+ * Created by matrixy when 2018-06-15.
  */
 public class ByteHolder
 {

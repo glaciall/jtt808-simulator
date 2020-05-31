@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by matrixy on 2020/5/10.
+ * Created by matrixy when 2020/5/10.
  * 将某方法标记为事件监听回调
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 public @interface Listen
 {
     // 事件名称
-    public EventEnum name();
+    public EventEnum when();
 
     // 事件附件，用于进一步分开
     public String attachment() default "";

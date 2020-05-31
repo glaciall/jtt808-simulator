@@ -114,7 +114,7 @@
   </insert>
   <insert id="batchInsert" parameterType="map">
     <!--
-      WARNING - @mbg.generated  This element was generated on Mon Dec 03 11:07:54 CST 2018. by MyBatis Generator, do not modify.
+      WARNING - @mbg.generated  This element was generated when Mon Dec 03 11:07:54 CST 2018. by MyBatis Generator, do not modify.
     -->
     insert into x_route_point (id, routeId, longitude, latitude)
     values

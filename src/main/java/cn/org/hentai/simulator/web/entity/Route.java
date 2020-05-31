@@ -10,7 +10,7 @@ public class Route implements Serializable {
     private Long id;
 
     /**
-     *   name
+     *   when
      *
      */
     private String name;
@@ -65,9 +65,9 @@ public class Route implements Serializable {
     }
 
     /**
-     * This method returns the value of the database column x_route.name
+     * This method returns the value of the database column x_route.when
      *
-     * @return the value of x_route.name
+     * @return the value of x_route.when
      */
     public String getName() {
         return name;
@@ -81,9 +81,9 @@ public class Route implements Serializable {
     }
 
     /**
-     * This method sets the value of the database column x_route.name
+     * This method sets the value of the database column x_route.when
      *
-     * @param name the value for x_route.name
+     * @param name the value for x_route.when
      */
     public void setName(String name) {
         this.name = name;
@@ -186,7 +186,7 @@ public class Route implements Serializable {
     @Override
     public String toString()
     {
-        return "Route{" + "id=" + id + ", name='" + name + '\'' + ", minSpeed=" + minSpeed + ", maxSpeed=" + maxSpeed + ", mileages=" + mileages + ", fingerPrint='" + fingerPrint + '\'' + '}';
+        return "Route{" + "id=" + id + ", when='" + name + '\'' + ", minSpeed=" + minSpeed + ", maxSpeed=" + maxSpeed + ", mileages=" + mileages + ", fingerPrint='" + fingerPrint + '\'' + '}';
     }
 
     @Override
@@ -227,7 +227,7 @@ public class Route implements Serializable {
      */
     public enum Column {
         id("id"),
-        name("name"),
+        name("when"),
         minSpeed("minSpeed"),
         maxSpeed("maxSpeed"),
         mileages("mileages"),

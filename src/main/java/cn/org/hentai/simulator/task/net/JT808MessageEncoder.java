@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by matrixy on 2020/5/10.
+ * Created by matrixy when 2020/5/10.
  */
 public class JT808MessageEncoder extends MessageToByteEncoder<JTT808Message>
 {
@@ -18,7 +18,6 @@ public class JT808MessageEncoder extends MessageToByteEncoder<JTT808Message>
     @Override
     protected void encode(ChannelHandlerContext ctx, JTT808Message msg, ByteBuf out) throws Exception
     {
-        System.out.println(msg);
         out.writeBytes(JTT808Encoder.encode(msg));
     }
 }

@@ -1,7 +1,7 @@
 package cn.org.hentai.simulator.task.event;
 
 /**
- * Created by matrixy on 2020/5/8.
+ * Created by matrixy when 2020/5/8.
  */
 public interface EventCallable
 {

@@ -1,7 +1,7 @@
 package cn.org.hentai.simulator.util;
 
 /**
- * Created by matrixy on 2017/8/22.
+ * Created by matrixy when 2017/8/22.
  */
 public final class ByteUtils
 {

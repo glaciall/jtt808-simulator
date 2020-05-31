@@ -1,7 +1,7 @@
 package cn.org.hentai.simulator.util;
 
 /**
- * Created by matrixy on 2018/4/14.
+ * Created by matrixy when 2018/4/14.
  * 字节块读写工具类
  * TODO: 把注释补上
  */

@@ -1,9 +1,9 @@
-package cn.org.hentai.simulator.task.eventloop;
+package cn.org.hentai.simulator.task.runner;
 
 import cn.org.hentai.simulator.task.AbstractDriveTask;
 
 /**
- * Created by matrixy on 2020/5/8.
+ * Created by matrixy when 2020/5/8.
  * LoopRunner线程管理器，用于分发/管理任务
  */
 public final class RunnerManager

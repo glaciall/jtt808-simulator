@@ -1,22 +1,18 @@
 package cn.org.hentai.simulator.task;
 
-import cn.org.hentai.simulator.entity.DeviceInfo;
 import cn.org.hentai.simulator.entity.DrivePlan;
 import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.jtt808.JTT808Message;
-import cn.org.hentai.simulator.task.event.EventDispatcher;
-import cn.org.hentai.simulator.task.eventloop.Executable;
-import cn.org.hentai.simulator.task.eventloop.RunnerManager;
+import cn.org.hentai.simulator.task.runner.Executable;
+import cn.org.hentai.simulator.task.runner.RunnerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Created by matrixy on 2020/5/8.
+ * Created by matrixy when 2020/5/8.
  * 车辆行程任务
  * 注意：本类里的方法全部由LoopRunner执行，不需要额外考虑线程安全问题
  * 此类为抽象类，对实际的消息与事件处理由子类实现完成
@@ -32,18 +28,11 @@ public abstract class AbstractDriveTask implements Driveable
     private String mode;
 
     // 车辆当前状态：就绪、启动、停车、熄火、
-    private String state;
-
-    // 车辆启动时间
-    private Date startTime;
-
-    // 行驶线路轨迹点信息
-    private LinkedList<Point> routePoints;
-
-    // netty通道ID，用于发送消息
-    private String channelId;
+    private TaskState state;
 
     private DrivePlan drivePlan;
+
+    private Point currentPosition;
 
     // 日志信息：在调试模式时记录下来
     private Object logs;
@@ -63,12 +52,20 @@ public abstract class AbstractDriveTask implements Driveable
         {
             this.parameters.put(key, settings.get(key));
         }
+        this.mode = getParameter("mode");
+
+        this.state = TaskState.idle;
     }
 
     // 获取下一个位置信息
     public final Point getNextPoint()
     {
-        return drivePlan.getNextPoint();
+        return currentPosition = drivePlan.getNextPoint();
+    }
+
+    public final Point getCurrentPosition()
+    {
+        return currentPosition;
     }
 
     // HINT: 整个日志吧，而且要根据当前的模式来决定是不是真的保存下来
@@ -78,7 +75,7 @@ public abstract class AbstractDriveTask implements Driveable
 
         if ("debug".equals(this.mode) == false) return;
         // HOWTO: 保存到什么地方好呢？
-        logger.debug(msg);
+        logger.info(msg);
     }
 
     /**
@@ -111,9 +108,17 @@ public abstract class AbstractDriveTask implements Driveable
         return this.parameters.get(name);
     }
 
-    // 启动车辆行驶行程
+    public TaskState getState()
+    {
+        return this.state;
+    }
+
     @Override
-    public abstract void startup();
+    public void terminate()
+    {
+        log("task terminated");
+        this.state = TaskState.terminated;
+    }
 
     // 发送消息
     public abstract void send(JTT808Message msg);

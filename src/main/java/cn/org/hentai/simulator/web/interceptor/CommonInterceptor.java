@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Created by matrixy on 2017/8/26.
+ * Created by matrixy when 2017/8/26.
  */
 public class CommonInterceptor extends HandlerInterceptorAdapter
 {

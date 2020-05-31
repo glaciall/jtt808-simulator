@@ -1,7 +1,7 @@
 package cn.org.hentai.simulator.task;
 
 /**
- * Created by matrixy on 2020/5/8.
+ * Created by matrixy when 2020/5/8.
  */
 public interface Driveable
 {
@@ -12,7 +12,8 @@ public interface Driveable
 
     // TODO: 熄火？
 
-    // TODO: 停车？
+    // 停车，彻底完成行程后的处理
+    public void terminate();
 
     // TODO: 故障？
 }
