@@ -8,124 +8,154 @@ import java.util.List;
  */
 public class TaskInfo
 {
-    private Long id;
-    private Long routeId;
+    private long id;
+    private long routeId;
     private String routeName;
-    private Integer routeMileages;
+    private int routeMileages;
 
-    private Long driverId;
-    private String driverName;
-
-    private Boolean alive;
-
-    private Long vehicleId;
-    private String vin;
-    private String vehicleDeviceSN;
+    private String vehicleNumber;
+    private String deviceSn;
+    private String simNumber;
 
     private String state;
-    private Date startTime;
-    private Double longitude;
-    private Double latitude;
+    private long startTime;
+    private double longitude;
+    private double latitude;
 
-    private List<Point> points;
+    public TaskInfo withSimNumber(String sim)
+    {
+        setSimNumber(sim);
+        return this;
+    }
+
+    public TaskInfo withLatitude(double lat)
+    {
+        setLatitude(lat);
+        return this;
+    }
+
+    public TaskInfo withLongitude(double lng)
+    {
+        setLongitude(lng);
+        return this;
+    }
+
+    public TaskInfo withStartTime(long stime)
+    {
+        setStartTime(stime);
+        return this;
+    }
+
+    public TaskInfo withState(String state)
+    {
+        setState(state);
+        return this;
+    }
+
+    public TaskInfo withDeviceSn(String sn)
+    {
+        setDeviceSn(sn);
+        return this;
+    }
+
+    public TaskInfo withVehicleNumber(String vehicleNumber)
+    {
+        setVehicleNumber(vehicleNumber);
+        return this;
+    }
+
+    public TaskInfo withRouteMileages(int routeMileages)
+    {
+        setRouteMileages(routeMileages);
+        return this;
+    }
+
+    public TaskInfo withRouteName(String name)
+    {
+        setRouteName(name);
+        return this;
+    }
+
+    public TaskInfo withRouteId(long routeId)
+    {
+        setRouteId(routeId);
+        return this;
+    }
+
+    public TaskInfo withId(long id)
+    {
+        setId(id);
+        return this;
+    }
+
+    public long getId()
+    {
+        return id;
+    }
+
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+
+    public long getRouteId()
+    {
+        return routeId;
+    }
+
+    public void setRouteId(long routeId)
+    {
+        this.routeId = routeId;
+    }
 
     public String getRouteName()
     {
         return routeName;
     }
 
-    public TaskInfo setRouteName(String routeName)
+    public void setRouteName(String routeName)
     {
         this.routeName = routeName;
-        return this;
     }
 
-    public Integer getRouteMileages()
+    public int getRouteMileages()
     {
         return routeMileages;
     }
 
-    public TaskInfo setRouteMileages(Integer routeMileages)
+    public void setRouteMileages(int routeMileages)
     {
         this.routeMileages = routeMileages;
-        return this;
     }
 
-    public Boolean getAlive()
+    public String getVehicleNumber()
     {
-        return alive;
+        return vehicleNumber;
     }
 
-    public TaskInfo setAlive(Boolean alive)
+    public void setVehicleNumber(String vehicleNumber)
     {
-        this.alive = alive;
-        return this;
+        this.vehicleNumber = vehicleNumber;
     }
 
-    public String getVin()
+    public String getDeviceSn()
     {
-        return vin;
+        return deviceSn;
     }
 
-    public TaskInfo setVin(String vin)
+    public void setDeviceSn(String deviceSn)
     {
-        this.vin = vin;
-        return this;
+        this.deviceSn = deviceSn;
     }
 
-    public Long getId()
+    public String getSimNumber()
     {
-        return id;
+        return simNumber;
     }
 
-    public TaskInfo setId(Long id)
+    public void setSimNumber(String simNumber)
     {
-        this.id = id;
-        return this;
-    }
-
-    public Long getDriverId()
-    {
-        return driverId;
-    }
-
-    public TaskInfo setDriverId(Long driverId)
-    {
-        this.driverId = driverId;
-        return this;
-    }
-
-    public String getDriverName()
-    {
-        return driverName;
-    }
-
-    public TaskInfo setDriverName(String driverName)
-    {
-        this.driverName = driverName;
-        return this;
-    }
-
-    public Long getVehicleId()
-    {
-        return vehicleId;
-    }
-
-    public TaskInfo setVehicleId(Long vehicleId)
-    {
-        this.vehicleId = vehicleId;
-        return this;
-    }
-
-    public String getVehicleDeviceSN()
-    {
-        return vehicleDeviceSN;
-    }
-
-    public TaskInfo setVehicleDeviceSN(String vehicleDeviceSN)
-    {
-        this.vehicleDeviceSN = vehicleDeviceSN;
-        return this;
+        this.simNumber = simNumber;
     }
 
     public String getState()
@@ -133,64 +163,56 @@ public class TaskInfo
         return state;
     }
 
-    public TaskInfo setState(String state)
+    public void setState(String state)
     {
         this.state = state;
-        return this;
     }
 
-    public Date getStartTime()
+    public long getStartTime()
     {
         return startTime;
     }
 
-    public TaskInfo setStartTime(Date startTime)
+    public void setStartTime(long startTime)
     {
         this.startTime = startTime;
-        return this;
     }
 
-    public Long getRouteId()
-    {
-        return routeId;
-    }
-
-    public TaskInfo setRouteId(Long routeId)
-    {
-        this.routeId = routeId;
-        return this;
-    }
-
-    public Double getLongitude()
+    public double getLongitude()
     {
         return longitude;
     }
 
-    public TaskInfo setLongitude(Double longitude)
+    public void setLongitude(double longitude)
     {
         this.longitude = longitude;
-        return this;
     }
 
-    public Double getLatitude()
+    public double getLatitude()
     {
         return latitude;
     }
 
-    public TaskInfo setLatitude(Double latitude)
+    public void setLatitude(double latitude)
     {
         this.latitude = latitude;
-        return this;
     }
 
-    public List<Point> getPoints()
+    @Override
+    public String toString()
     {
-        return points;
-    }
-
-    public TaskInfo setPoints(List<Point> points)
-    {
-        this.points = points;
-        return this;
+        return "TaskInfo{" +
+                "id=" + id +
+                ", routeId=" + routeId +
+                ", routeName='" + routeName + '\'' +
+                ", routeMileages=" + routeMileages +
+                ", vehicleNumber='" + vehicleNumber + '\'' +
+                ", deviceSn='" + deviceSn + '\'' +
+                ", simNumber='" + simNumber + '\'' +
+                ", state='" + state + '\'' +
+                ", startTime=" + startTime +
+                ", longitude=" + longitude +
+                ", latitude=" + latitude +
+                '}';
     }
 }

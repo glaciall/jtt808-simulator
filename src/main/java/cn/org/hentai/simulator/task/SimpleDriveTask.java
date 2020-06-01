@@ -34,12 +34,16 @@ public class SimpleDriveTask extends AbstractDriveTask
 
     // 最后发送的消息ID
     int lastSentMessageId = 0;
-    Map<Integer, Integer> message;
 
     // 连接池
     ConnectionPool pool = ConnectionPool.getInstance();
 
     SimpleDateFormat sdf = new SimpleDateFormat("YYMMddHHmmss");
+
+    public SimpleDriveTask(long id)
+    {
+        super(id);
+    }
 
     @Override
     public void startup()

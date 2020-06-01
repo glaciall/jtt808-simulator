@@ -7,8 +7,8 @@ public enum TaskState
     parking("parking", "停车中"),
     terminated("terminated", "行驶终止");
 
-    String name;
     String value;
+    String name;
 
     TaskState(String value, String name)
     {
@@ -16,13 +16,13 @@ public enum TaskState
         this.name = name;
     }
 
-    public String getName()
-    {
-        return this.name;
-    }
-
     public String getValue()
     {
         return this.value;
+    }
+
+    public String getName()
+    {
+        return this.name;
     }
 }

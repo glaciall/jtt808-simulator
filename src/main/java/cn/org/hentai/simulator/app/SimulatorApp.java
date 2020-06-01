@@ -1,6 +1,7 @@
 package cn.org.hentai.simulator.app;
 
 import cn.org.hentai.simulator.manager.RouteManager;
+import cn.org.hentai.simulator.task.TaskManager;
 import cn.org.hentai.simulator.task.event.EventDispatcher;
 import cn.org.hentai.simulator.task.runner.RunnerManager;
 import cn.org.hentai.simulator.task.net.ConnectionPool;
@@ -33,7 +34,8 @@ public class SimulatorApp
         BeanUtils.init(context);
         Configs.init(context);
 
-        RouteManager.getInstance().init();
+        RouteManager.init();
+        TaskManager.init();
 
         RunnerManager.init();
         EventDispatcher.init();

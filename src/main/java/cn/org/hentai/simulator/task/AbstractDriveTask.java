@@ -2,6 +2,7 @@ package cn.org.hentai.simulator.task;
 
 import cn.org.hentai.simulator.entity.DrivePlan;
 import cn.org.hentai.simulator.entity.Point;
+import cn.org.hentai.simulator.entity.TaskInfo;
 import cn.org.hentai.simulator.jtt808.JTT808Message;
 import cn.org.hentai.simulator.task.runner.Executable;
 import cn.org.hentai.simulator.task.runner.RunnerManager;
@@ -22,7 +23,9 @@ public abstract class AbstractDriveTask implements Driveable
     static Logger logger = LoggerFactory.getLogger(AbstractDriveTask.class);
 
     // 行程ID
-    private Long id;
+    private long id;
+
+    private long routeId;
 
     // 运行模式：调试模式，压测模式
     private String mode;
@@ -37,7 +40,26 @@ public abstract class AbstractDriveTask implements Driveable
     // 日志信息：在调试模式时记录下来
     private Object logs;
 
+    // TODO: 需要把几个常用的，用于显示在表格上的属性值，整成成员属性，避免对Map的并发读写
+    TaskInfo info;
+
     Map<String, String> parameters;
+
+    public AbstractDriveTask(long id, long routeId)
+    {
+        this.id = id;
+        this.routeId = routeId;
+    }
+
+    public long getId()
+    {
+        return this.id;
+    }
+
+    public long getRouteId()
+    {
+        return this.routeId;
+    }
 
     /**
      * 使用参数集settings进行初始化
@@ -55,6 +77,14 @@ public abstract class AbstractDriveTask implements Driveable
         this.mode = getParameter("mode");
 
         this.state = TaskState.idle;
+
+        this.info = new TaskInfo()
+                .withId(id)
+                .withRouteId(routeId)
+                .withVehicleNumber(getParameter("vehicle.number"))
+                .withDeviceSn(getParameter("device.sn"))
+                .withSimNumber(getParameter("device.sn"))
+                .withStartTime(System.currentTimeMillis());
     }
 
     // 获取下一个位置信息
@@ -118,6 +148,17 @@ public abstract class AbstractDriveTask implements Driveable
     {
         log("task terminated");
         this.state = TaskState.terminated;
+    }
+
+    public TaskInfo getInfo()
+    {
+        if (currentPosition != null)
+        {
+            info.setLongitude(currentPosition.getLongitude());
+            info.setLatitude(currentPosition.getLatitude());
+        }
+        info.setState(this.state.getName());
+        return info;
     }
 
     // 发送消息

@@ -4,6 +4,7 @@ import cn.org.hentai.simulator.entity.DrivePlan;
 import cn.org.hentai.simulator.manager.RouteManager;
 import cn.org.hentai.simulator.manager.ScheduleTaskManager;
 import cn.org.hentai.simulator.task.SimpleDriveTask;
+import cn.org.hentai.simulator.task.TaskManager;
 import cn.org.hentai.simulator.web.entity.Route;
 import cn.org.hentai.simulator.web.entity.ScheduleTask;
 import cn.org.hentai.simulator.web.service.RouteService;
@@ -82,12 +83,7 @@ public class TaskController
                 }
             };
 
-            // TODO: 需要检查一下是不是有冲突~~~
-
-            DrivePlan plan = RouteManager.getInstance().generate(routeId, new Date());
-            SimpleDriveTask task = new SimpleDriveTask();
-            task.init(params, plan);
-            task.startup();
+            TaskManager.getInstance().run(params, routeId);
         }
         catch(Exception ex)
         {

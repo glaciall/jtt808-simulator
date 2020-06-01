@@ -32,25 +32,29 @@ public final class RouteManager
     // 停留点到线路轨迹的最长距离
     static final int MAX_DISNTANCE_TO_STAYPOINT = 2500;
 
-    static RouteManager instance = null;
+    static final RouteManager instance = new RouteManager();
 
     int sequence = 1;
 
     ConcurrentHashMap<Long, XRoute> routes = new ConcurrentHashMap<Long, XRoute>();
     private RouteManager()
     {
+        init0();
+    }
+
+    public static void init()
+    {
         // ...
     }
 
-    public static synchronized RouteManager getInstance()
+    public static RouteManager getInstance()
     {
-        if (null == instance) instance = new RouteManager();
         return instance;
     }
 
     // 初始化，加载数据库中的线路以及其问题路段、停留点等信息
     // 此方法暂时只是从文件中去加载数据
-    public void init()
+    public void init0()
     {
         logger.info("初始化线路开始...");
         if (routes.size() > 0) return;
