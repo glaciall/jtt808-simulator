@@ -43,7 +43,7 @@ public final class TaskManager
         // TODO: 需要检查一下是不是有冲突~~~
         DrivePlan plan = RouteManager.getInstance().generate(routeId, new Date());
 
-        AbstractDriveTask task = new SimpleDriveTask(this.sequence.addAndGet(1L));
+        AbstractDriveTask task = new SimpleDriveTask(this.sequence.addAndGet(1L), routeId);
         task.init(params, plan);
         task.startup();
 

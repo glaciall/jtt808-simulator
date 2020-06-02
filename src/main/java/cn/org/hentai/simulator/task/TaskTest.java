@@ -35,7 +35,7 @@ public class TaskTest
             settings.put("device.sn", String.format("%07d", i));
             settings.put("device.sim", String.format("0138%08d", i));
 
-            tasks[i] = new SimpleDriveTask();
+            tasks[i] = new SimpleDriveTask(0, 0);
             tasks[i].init(settings, null);
             tasks[i].startup();
         }

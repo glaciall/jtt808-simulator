@@ -40,9 +40,9 @@ public class SimpleDriveTask extends AbstractDriveTask
 
     SimpleDateFormat sdf = new SimpleDateFormat("YYMMddHHmmss");
 
-    public SimpleDriveTask(long id)
+    public SimpleDriveTask(long id, long routeId)
     {
-        super(id);
+        super(id, routeId);
     }
 
     @Override
