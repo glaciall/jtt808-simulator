@@ -63,11 +63,13 @@ public class LoopRunner extends Thread
             // 如果需要执行的时间是在线程休眠时间前，那需要唤醒线程
             if (task.executeTime < nextExecuteTime) lock.notify();
         }
+
+        System.err.println("dispatched...");
     }
 
     public void run()
     {
-        while (!this.isInterrupted())
+        loop : while (!this.isInterrupted())
         {
             try
             {
@@ -109,8 +111,14 @@ public class LoopRunner extends Thread
                 {
                     try
                     {
+                        System.err.println("execute jobs...");
+
                         // 跳过已经终止的行程任务
-                        if (task.driveTask.getState().equals(TaskState.terminated) == true) continue;
+                        if (task.driveTask.getState().equals(TaskState.terminated) == true)
+                        {
+                            System.err.println("skipped...");
+                            continue;
+                        }
 
                         task.executable.execute(task.driveTask);
                         if (task.interval > 0)

@@ -17,6 +17,7 @@ import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,8 +62,9 @@ public class ConnectionPool
     // 连接到目标服务器
     public String connect(String address, int port, AbstractDriveTask watcher)
     {
-        Channel chl = bootstrap.connect(address, port).channel();
+        Channel chl = bootstrap.register().channel();
         connections.put(chl.id().asLongText(), new Connection(chl, watcher));
+        chl.connect(new InetSocketAddress(address, port));
         return chl.id().asLongText();
     }
 
@@ -84,8 +86,7 @@ public class ConnectionPool
     // 当连接通道接收到消息时的通知
     protected void notify(String tag, String channelId, String messageId, Object data)
     {
-        logger.debug("notify -> channel: {}, tag: {}", channelId, tag);
-        for (int i = 0; i < 100 && connections.containsKey(channelId) == false; i++) try { Thread.sleep(0, 1000); } catch(Exception e) { };
+        logger.info("notify -> channel: {}, tag: {}", channelId, tag);
         Connection conn = connections.get(channelId);
         if (conn != null)
         {

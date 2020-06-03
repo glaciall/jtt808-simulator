@@ -25,11 +25,14 @@ public final class TaskManager
     Object lock;
     LinkedList<AbstractDriveTask> tasks;
     AtomicLong sequence;
+    AtomicLong index;
 
     private TaskManager()
     {
         this.lock = new Object();
         this.tasks = new LinkedList<>();
+
+        this.index = new AtomicLong(0L);
         this.sequence = new AtomicLong(0L);
     }
 
@@ -51,6 +54,11 @@ public final class TaskManager
         {
             tasks.add(task);
         }
+    }
+
+    public long nextIndex()
+    {
+        return this.index.addAndGet(1L);
     }
 
     // 分页查找，用于列表显示运行中的行程任务状态

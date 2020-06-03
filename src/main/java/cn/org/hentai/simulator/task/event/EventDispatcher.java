@@ -50,7 +50,7 @@ public final class EventDispatcher
                 {
                     Object[] args = new Object[method.getParameterCount()];
                     if (args.length == 1) args[0] = data;
-                    try { method.invoke(driveTask, args); } catch(Exception e) { }
+                    try { method.invoke(driveTask, args); } catch(Exception e) { e.printStackTrace(); }
                 }
             });
         }

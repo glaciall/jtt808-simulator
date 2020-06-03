@@ -58,20 +58,15 @@ public class BatchController extends BaseController
                     break;
                 }
             }
-            List<Route> list = routeService.list();
             List<Route> routes = null;
-            if (randomRouteMode) routes = list;
-            else routes = new ArrayList(list.size());
-            for (Long id : routeIdList)
+            if (randomRouteMode) routes = routeService.list();
+            else
             {
-                for (int i = 0; i < list.size(); i++)
+                routes = new ArrayList(routeIdList.length);
+                for (Long id : routeIdList)
                 {
-                    Route r = list.get(i);
-                    if (r.getId().equals(id))
-                    {
-                        routes.add(r);
-                        break;
-                    }
+                    Route route = routeService.getById(id);
+                    if (route != null) routes.add(route);
                 }
             }
 
@@ -85,14 +80,17 @@ public class BatchController extends BaseController
             };
 
             // 创建任务
+            TaskManager mgr = TaskManager.getInstance();
             for (int i = 0; i < vehicleCount; i++)
             {
-                params.put("vehicle.number", String.format(vehicleNumberPattern, i));
-                params.put("device.sn", String.format(deviceSnPattern, i));
-                params.put("device.sim", String.format(simNumberPattern, i));
+                long idx = mgr.nextIndex();
+                params.put("vehicle.number", String.format(vehicleNumberPattern, idx));
+                params.put("device.sn", String.format(deviceSnPattern, idx));
+                params.put("device.sim", String.format(simNumberPattern, idx));
+
+                long routeId = routes.get((int)(Math.random() * routes.size())).getId();
+                mgr.run(params, routeId);
             }
-            long routeId = routes.get((int)(Math.random() * routes.size())).getId();
-            TaskManager.getInstance().run(params, routeId);
         }
         catch(Exception ex)
         {
