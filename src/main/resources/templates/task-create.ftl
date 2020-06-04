@@ -72,6 +72,7 @@
 <script type="text/javascript">
     $(document).ready(function()
     {
+        setCurrentMenu("task");
         $('#btn-run').click(function()
         {
             var params = {

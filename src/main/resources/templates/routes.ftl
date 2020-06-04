@@ -19,6 +19,7 @@
 <script type="text/javascript">
     $(document).ready(function()
     {
+        setCurrentMenu('route');
         $('#route-table').paginate({
             url: '${context}/route/list',
             fields: [

@@ -55,6 +55,10 @@ hr
     line-height: 40px;
     padding-left: 20px;
 }
+.container .sidebar .menu .active
+{
+    background-color: #0099ff;
+}
 .container .sidebar .menu li:hover
 {
     background-color: #333333;

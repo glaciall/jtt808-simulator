@@ -313,6 +313,7 @@
 
     $(document).ready(function()
     {
+        setCurrentMenu('route');
         map = new BMap.Map('map', { enableMapClick : false });
         map.centerAndZoom('中国', 6);
         map.setMapStyle({ style : 'midnight' });
