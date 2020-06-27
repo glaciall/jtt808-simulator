@@ -2,12 +2,12 @@ package cn.org.hentai.simulator.task.runner;
 
 import cn.org.hentai.simulator.task.AbstractDriveTask;
 import cn.org.hentai.simulator.task.TaskState;
+import cn.org.hentai.simulator.util.RBTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by matrixy when 2020/5/8.
@@ -20,8 +20,8 @@ public class LoopRunner extends Thread
     // 将执行的任务
     private LinkedList<ExecutableTask> jobs;
 
-    // 还需要等待的任务
-    private TreeSet<ExecutableTask> tasks;
+    // 所有待执行的任务组（每个时刻的任务列表），通过红黑树保存起来，每次只获取最小（最近）的一条
+    private RBTree<TaskGroup> scheduleTasks;
 
     private Object lock;
 
@@ -31,15 +31,8 @@ public class LoopRunner extends Thread
     public LoopRunner()
     {
         lock = new Object();
-        tasks = new TreeSet<ExecutableTask>(new Comparator<ExecutableTask>()
-        {
-            @Override
-            public int compare(ExecutableTask o1, ExecutableTask o2)
-            {
-                long v = o1.executeTime - o2.executeTime;
-                return v == 0 ? 0 : v > 0 ? 1 : -1;
-            }
-        });
+        // tasks需要一个有序的，并且能够容忍同权重的容器
+        scheduleTasks = new RBTree<TaskGroup>();
         jobs = new LinkedList<ExecutableTask>();
     }
 
@@ -57,14 +50,26 @@ public class LoopRunner extends Thread
 
     public void execute(ExecutableTask task)
     {
+        TaskGroup tmp = new TaskGroup(task.executeTime);
         synchronized (lock)
         {
-            tasks.add(task);
+            // scheduleTasks.add(task);
+            RBTree.RBTNode item = scheduleTasks.search(tmp);
+            if (item != null && item.getKey() != null)
+            {
+                tmp = (TaskGroup) item.getKey();
+                tmp.add(task);
+            }
+            else
+            {
+                tmp = new TaskGroup(task.executeTime);
+                tmp.add(task);
+                scheduleTasks.insert(tmp);
+            }
+
             // 如果需要执行的时间是在线程休眠时间前，那需要唤醒线程
             if (task.executeTime < nextExecuteTime) lock.notify();
         }
-
-        System.err.println("dispatched...");
     }
 
     public void run()
@@ -77,21 +82,22 @@ public class LoopRunner extends Thread
                 long now = System.currentTimeMillis();
                 synchronized (lock)
                 {
-                    while (tasks.isEmpty() == false)
+                    while (true)
                     {
-                        ExecutableTask task = tasks.first();
-                        if (now < task.executeTime)
+                        TaskGroup group = scheduleTasks.minimum();
+                        // 如果没有需要执行的任务
+                        if (group == null) break;
+                        // 如果最近的任务的时间还没有到
+                        if (group.time > now)
                         {
-                            // 如果还没有到时间，那就跳出循环
-                            ms = task.executeTime - now;
+                            // 如果时间还没有到，那就看还差多久，就休眠多久
+                            ms = group.time - now;
                             break;
                         }
-                        else
-                        {
-                            // 否则加到执行列表里来
-                            tasks.remove(task);
-                            jobs.addLast(task);
-                        }
+
+                        // 删掉它，全部转移到待执行的列表上来
+                        scheduleTasks.remove(group);
+                        jobs.addAll(group.tasks);
                     }
                 }
 
@@ -111,12 +117,9 @@ public class LoopRunner extends Thread
                 {
                     try
                     {
-                        System.err.println("execute jobs...");
-
                         // 跳过已经终止的行程任务
                         if (task.driveTask.getState().equals(TaskState.terminated) == true)
                         {
-                            System.err.println("skipped...");
                             continue;
                         }
 
@@ -129,7 +132,7 @@ public class LoopRunner extends Thread
                     }
                     catch(Exception e)
                     {
-                        logger.error("job execute failed", e);
+                        logger.info("job execute failed", e);
                     }
                 }
 
@@ -139,6 +142,37 @@ public class LoopRunner extends Thread
             {
                 logger.error("execute failed", ex);
             }
+        }
+    }
+
+    static final AtomicLong xxoo = new AtomicLong(0L);
+    public static void main(String[] args) throws Exception
+    {
+        final LoopRunner runner = new LoopRunner();
+        runner.start();
+
+        for (int i = 0; i < 10; i++)
+        {
+            new Thread()
+            {
+                public void run()
+                {
+                    for (int i = 0; i < 1000; i++)
+                    {
+                        // task.executeTime = System.currentTimeMillis();
+                        final ExecutableTask task = new ExecutableTask(null, new Executable()
+                        {
+                            @Override
+                            public void execute(AbstractDriveTask driveTask)
+                            {
+                                System.out.println(xxoo.addAndGet(1L));
+                            }
+                        }, 0, 0);
+                        // TODO: treeset的去重。。。相同的会去掉
+                        runner.execute(task);
+                    }
+                }
+            }.start();
         }
     }
 }

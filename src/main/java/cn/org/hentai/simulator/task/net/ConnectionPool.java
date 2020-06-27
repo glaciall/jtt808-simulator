@@ -79,7 +79,10 @@ public class ConnectionPool
     public void send(String channelId, Object data) throws Exception
     {
         Connection conn = connections.get(channelId);
-        if (conn != null) conn.channel.writeAndFlush(data);
+        if (conn != null)
+        {
+            conn.channel.writeAndFlush(data);
+        }
         else throw new SocketException("connection closed");
     }
 
