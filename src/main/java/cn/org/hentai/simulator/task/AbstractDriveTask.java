@@ -83,7 +83,7 @@ public abstract class AbstractDriveTask implements Driveable
                 .withRouteId(routeId)
                 .withVehicleNumber(getParameter("vehicle.number"))
                 .withDeviceSn(getParameter("device.sn"))
-                .withSimNumber(getParameter("device.sn"))
+                .withSimNumber(getParameter("device.sim"))
                 .withStartTime(System.currentTimeMillis());
     }
 
