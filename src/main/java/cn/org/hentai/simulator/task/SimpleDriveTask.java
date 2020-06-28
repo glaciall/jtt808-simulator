@@ -168,7 +168,15 @@ public class SimpleDriveTask extends AbstractDriveTask
         final Point point = getNextPoint();
         if (point == null)
         {
-            terminate();
+            // 10分钟后再关闭
+            executeAfter(new Executable()
+            {
+                @Override
+                public void execute(AbstractDriveTask driveTask)
+                {
+                    terminate();
+                }
+            }, 1000 * 60 * 10);
             return;
         }
 
