@@ -55,6 +55,7 @@ public class SimpleDriveTask extends AbstractDriveTask
     @Override
     public void terminate()
     {
+        super.terminate();
         pool.close(connectionId);
     }
 
