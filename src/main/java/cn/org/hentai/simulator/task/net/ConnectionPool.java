@@ -89,7 +89,7 @@ public class ConnectionPool
     // 当连接通道接收到消息时的通知
     protected void notify(String tag, String channelId, String messageId, Object data)
     {
-        logger.info("notify -> channel: {}, tag: {}", channelId, tag);
+        // logger.info("notify -> channel: {}, tag: {}", channelId, tag);
         Connection conn = connections.get(channelId);
         if (conn != null)
         {

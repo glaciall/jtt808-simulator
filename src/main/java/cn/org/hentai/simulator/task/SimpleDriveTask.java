@@ -68,7 +68,6 @@ public class SimpleDriveTask extends AbstractDriveTask
     public void onConnected()
     {
         log("connected");
-
         // 连接成功时，发送鉴权消息
         JTT808Message msg = new JTT808Message();
         msg.id = 0x0102;
