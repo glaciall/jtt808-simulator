@@ -477,7 +477,7 @@
         // 保存线路信息
         $('#btn-save').click(function()
         {
-            var name = $.trim($('#when').val());
+            var name = $.trim($('#name').val());
             var minSpeed = $.trim($('#minSpeed').val());
             var maxSpeed = $.trim($('#maxSpeed').val());
             var pointsJson = toJson(route.points);
