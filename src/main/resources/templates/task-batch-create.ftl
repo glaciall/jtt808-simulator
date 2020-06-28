@@ -50,7 +50,7 @@
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">终端SIM卡号：</div>
-            <div class="x-col-6"><input type="text" name="simNumberPatter" id="simNumberPattern" placeholder="如：13800%06d" value="13800%06d" /></div>
+            <div class="x-col-6"><input type="text" name="simNumberPatter" id="simNumberPattern" placeholder="如：013800%06d，12位数字" value="013800%06d" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">

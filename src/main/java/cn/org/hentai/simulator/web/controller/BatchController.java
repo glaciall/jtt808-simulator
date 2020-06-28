@@ -84,9 +84,15 @@ public class BatchController extends BaseController
             for (int i = 0; i < vehicleCount; i++)
             {
                 long idx = mgr.nextIndex();
+                String sn = String.format(deviceSnPattern, idx);
+                String sim = String.format(simNumberPattern, idx);
+
+                if (sn.length() < 7) sn = ("00000000000000000" + sn).replaceAll("^0+(\\w{7})$", "$1");
+                if (sim.length() < 12) sim = ("00000000000000000000" + sim).replaceAll("^0+(\\d{12})$", "$1");
+
                 params.put("vehicle.number", String.format(vehicleNumberPattern, idx));
-                params.put("device.sn", String.format(deviceSnPattern, idx));
-                params.put("device.sim", String.format(simNumberPattern, idx));
+                params.put("device.sn", sn);
+                params.put("device.sim", sim);
 
                 long routeId = routes.get((int)(Math.random() * routes.size())).getId();
                 mgr.run(params, routeId);
