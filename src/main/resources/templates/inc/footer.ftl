@@ -13,4 +13,14 @@
             }
         });
     }
+
+    $(document).ready(function()
+    {
+        $('.container .sidebar .menu li').click(function(e)
+        {
+            if (e.target.tagName == 'A') return;
+            var link = $(this).find('a');
+            location.href = link.attr('href');
+        });
+    });
 </script>

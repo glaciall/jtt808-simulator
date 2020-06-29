@@ -62,6 +62,7 @@ hr
 .container .sidebar .menu li:hover
 {
     background-color: #333333;
+    cursor: pointer;
 }
 .container .sidebar .menu li i
 {
