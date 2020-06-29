@@ -78,6 +78,23 @@ public final class TaskManager
         }
     }
 
+    public TaskInfo getById(Long id)
+    {
+        TaskInfo info = null;
+        synchronized (lock)
+        {
+            for (AbstractDriveTask task : tasks)
+            {
+                if (task.getId() == id)
+                {
+                    info = task.getInfo();
+                    break;
+                }
+            }
+        }
+        return info;
+    }
+
     static final TaskManager instance = new TaskManager();
     public static void init()
     {

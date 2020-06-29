@@ -80,15 +80,14 @@
                     }
                 },
                 {
-                    name: '-',
+                    name: 'id',
                     title: '操作',
                     align: 'center',
                     width : '160px',
                     formatter: function (i, v, r)
                     {
                         var html = '';
-                        html += '<a href="javascript:;" target="_blank" class="btn btn-sm btn-blue">详情</a>';
-                        html += '<a href="javascript:;" target="_blank" class="btn btn-sm btn-orange">终止</a>';
+                        html += '<a href="${context}/monitor/view?id=' + v + '" target="_blank" class="btn btn-sm btn-blue">详情</a>';
                         return html;
                     }
                 }
