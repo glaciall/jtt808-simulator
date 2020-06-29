@@ -13,6 +13,12 @@
         {
             padding: 20px 20px 20px 20px;
         }
+        .content .x-col-2 input { width: 100%; }
+        .x-hint
+        {
+            color: #999999;
+            padding: 0px 10px 0px 10px;
+        }
     </style>
 </head>
 <body>
@@ -35,37 +41,38 @@
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">车辆数量：</div>
-            <div class="x-col-6"><input type="text" name="vehicleCount" id="vehicleCount" placeholder="最高不超过100000" value="1000" /></div>
+            <div class="x-col-2"><input type="text" name="vehicleCount" id="vehicleCount" placeholder="最高不超过100000" value="1000" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">车牌号：</div>
-            <div class="x-col-6"><input type="text" name="vehicleNumberPattern" id="vehicleNumberPattern" placeholder="如：京%06d" value="京%06d" /></div>
+            <div class="x-col-2"><input type="text" name="vehicleNumberPattern" id="vehicleNumberPattern" placeholder="如：京%06d" value="京%06d" /></div>
+            <div class="x-col-4"><span class="x-hint">如<strong>%06d</strong>表示六个数字，左侧补0，从0~车辆数量的序号生成车牌号</span></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">终端ID：</div>
-            <div class="x-col-6"><input type="text" name="deviceSnPattern" id="deviceSnPattern" placeholder="如：A%06d" value="A%06d" /></div>
+            <div class="x-col-2"><input type="text" name="deviceSnPattern" id="deviceSnPattern" placeholder="如：A%06d" value="A%06d" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">终端SIM卡号：</div>
-            <div class="x-col-6"><input type="text" name="simNumberPatter" id="simNumberPattern" placeholder="如：013800%06d，12位数字" value="013800%06d" /></div>
+            <div class="x-col-2"><input type="text" name="simNumberPatter" id="simNumberPattern" placeholder="如：013800%06d，12位数字" value="013800%06d" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">808网关服务器：</div>
-            <div class="x-col-6"><input type="text" name="serverAddress" id="serverAddress" /></div>
+            <div class="x-col-2"><input type="text" name="serverAddress" id="serverAddress" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">808网关服务器端口：</div>
-            <div class="x-col-6"><input type="text" name="serverPort" id="serverPort" /></div>
+            <div class="x-col-2"><input type="text" name="serverPort" id="serverPort" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">&nbsp;</div>
-            <div class="x-col-6">
+            <div class="x-col-4">
                 <button class="btn btn-blue" id="btn-run">创建</button>
             </div>
             <div class="x-clearfix"></div>
@@ -77,6 +84,8 @@
 <script type="text/javascript">
     $(document).ready(function()
     {
+        setCurrentMenu('batch');
+
         $('#btn-run').click(function()
         {
             var idList = [];
