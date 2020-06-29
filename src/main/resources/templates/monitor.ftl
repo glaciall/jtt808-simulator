@@ -195,7 +195,7 @@
             vehicle = new BMapLib.AutoCar(map, startPoint, {
                 label : info.vehicleNumber,
                 labelColor : '#0099ff',
-                icon : new BMap.Icon('${context}/static/img/vehicle.png', new BMap.Size(40, 40)),
+                icon : new BMap.Icon('${context}/static/img/vehicle.png', new BMap.Size(68, 68)),
                 iconOffset : new BMap.Size(0, 0),
                 enableRotation : true,
                 autoView : true
