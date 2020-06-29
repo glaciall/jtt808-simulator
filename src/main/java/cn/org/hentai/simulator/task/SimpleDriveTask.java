@@ -69,12 +69,23 @@ public class SimpleDriveTask extends AbstractDriveTask
     public void onConnected()
     {
         log("connected");
-        // 连接成功时，发送鉴权消息
+        // 连接成功时，发送注册消息
+        String sn = getParameter("device.sn");
+        byte[] vin = new byte[0];
+        try { vin = getParameter("vehicle.number").getBytes("GBK"); } catch(Exception ex) { }
+
         JTT808Message msg = new JTT808Message();
-        msg.id = 0x0102;
-        msg.body = Packet.create(32)
-                .addBytes("01234567890123456789012345678900".getBytes())
+        msg.id = 0x0100;
+        msg.body = Packet.create(64)
+                .addShort((short)0x0001)
+                .addShort((short)0x0001)
+                .addBytes("CHINA".getBytes(), 5)
+                .addBytes("HENTAI-SIMULATOR".getBytes(), 20)
+                .addBytes(sn.getBytes(), 7)
+                .addByte((byte)0x01)
+                .addBytes(vin)
                 .getBytes();
+
         send(msg);
     }
 
@@ -90,43 +101,13 @@ public class SimpleDriveTask extends AbstractDriveTask
 
         switch (lastSentMessageId)
         {
-            // 鉴权消息
-            case 0x0102 : onAuthenticateResponsed(result == 0x00); break;
-
             // 其它就不管了
         }
 
         lastSentMessageId = 0;
     }
 
-    public void onAuthenticateResponsed(boolean isSuccess)
-    {
-        if (isSuccess)
-        {
-            startSession();
-        }
-        else
-        {
-            String sn = getParameter("device.sn");
-            byte[] vin = new byte[0];
-            try { vin = getParameter("vehicle.number").getBytes("GBK"); } catch(Exception ex) { }
-
-            JTT808Message msg = new JTT808Message();
-            msg.id = 0x0100;
-            msg.body = Packet.create(64)
-                    .addShort((short)0x0001)
-                    .addShort((short)0x0001)
-                    .addBytes("CHINA".getBytes(), 5)
-                    .addBytes("HENTAI-SIMULATOR".getBytes(), 20)
-                    .addBytes(sn.getBytes(), 7)
-                    .addByte((byte)0x01)
-                    .addBytes(vin)
-                    .getBytes();
-
-            send(msg);
-        }
-    }
-
+    // 注册应答时
     @Listen(when = EventEnum.message_received, attachment = "8100")
     public void onRegisterResponsed(JTT808Message msg)
     {
@@ -134,6 +115,7 @@ public class SimpleDriveTask extends AbstractDriveTask
         int result = msg.body[2] & 0xff;
         if (result == 0x00)
         {
+
             startSession();
         }
         else
