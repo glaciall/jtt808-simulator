@@ -21,6 +21,7 @@ public class TaskInfo
     private long startTime;
     private double longitude;
     private double latitude;
+    private long reportTime;
 
     public TaskInfo withSimNumber(String sim)
     {
@@ -86,6 +87,22 @@ public class TaskInfo
     {
         setId(id);
         return this;
+    }
+
+    public TaskInfo withReportTime(long time)
+    {
+        setReportTime(time);
+        return this;
+    }
+
+    public long getReportTime()
+    {
+        return reportTime;
+    }
+
+    public void setReportTime(long reportTime)
+    {
+        this.reportTime = reportTime;
     }
 
     public long getId()
@@ -213,6 +230,7 @@ public class TaskInfo
                 ", startTime=" + startTime +
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
+                ", reportTime=" + reportTime +
                 '}';
     }
 }

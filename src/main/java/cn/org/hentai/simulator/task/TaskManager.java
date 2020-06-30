@@ -1,6 +1,7 @@
 package cn.org.hentai.simulator.task;
 
 import cn.org.hentai.simulator.entity.DrivePlan;
+import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.entity.TaskInfo;
 import cn.org.hentai.simulator.manager.RouteManager;
 import cn.org.hentai.simulator.web.vo.Page;
@@ -93,6 +94,21 @@ public final class TaskManager
             }
         }
         return info;
+    }
+
+    public Point getCurrentPositionById(Long id)
+    {
+        synchronized (lock)
+        {
+            for (AbstractDriveTask task : tasks)
+            {
+                if (task.getId() == id)
+                {
+                    return task.getCurrentPosition();
+                }
+            }
+        }
+        return null;
     }
 
     static final TaskManager instance = new TaskManager();

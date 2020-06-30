@@ -141,6 +141,21 @@
                         <div class="x-col-7" id="startTime">--</div>
                         <div class="x-clearfix"></div>
                     </div>
+                    <div class="x-row">
+                        <div class="x-col-3 text-right">最后上报：</div>
+                        <div class="x-col-7" id="reportTime">--</div>
+                        <div class="x-clearfix"></div>
+                    </div>
+                    <div class="x-row">
+                        <div class="x-col-3 text-right">当前位置：</div>
+                        <div class="x-col-7" id="lng">--</div>
+                        <div class="x-clearfix"></div>
+                    </div>
+                    <div class="x-row">
+                        <div class="x-col-3 text-right">&nbsp;</div>
+                        <div class="x-col-7" id="lat">--</div>
+                        <div class="x-clearfix"></div>
+                    </div>
                     <hr />
                 </div>
             </div>
@@ -156,6 +171,7 @@
     var taskId = '${id}';
     var map = null;
     var vehicle = null;
+    var lastPositionTime = 0;
 
     $(document).ready(function()
     {
@@ -169,7 +185,18 @@
         BMapLib.EventBinding.setClickListener(onVehicleClick);
 
         loadTaskInfo();
+
+        $('#btn-stop').click(terminate);
     });
+
+    function terminate()
+    {
+        $.post('${context}/monitor/terminate', { id : taskId }, function(result)
+        {
+            if (result.error && result.error.code) return alert(result.error.reason);
+            alert('已成功终止任务');
+        });
+    }
 
     function onVehicleClick()
     {
@@ -190,7 +217,7 @@
             $('#startTime').html(new Date(info.startTime).format('yyyy-MM-dd hh:mm:ss'));
 
             var startPoint = new BMap.Point(info.longitude, info.latitude);
-            map.centerAndZoom(startPoint, 14);
+            map.centerAndZoom(startPoint, 16);
 
             vehicle = new BMapLib.AutoCar(map, startPoint, {
                 label : info.vehicleNumber,
@@ -198,16 +225,40 @@
                 icon : new BMap.Icon('${context}/static/img/vehicle.png', new BMap.Size(68, 68)),
                 iconOffset : new BMap.Size(0, 0),
                 enableRotation : true,
-                autoView : true
+                autoView : true,
+                time : info.reportTime
             });
+
+            showCurrentPosition(info.longitude, info.latitude, info.reportTime);
 
             vehicle.show();
         });
+
+        setTimeout(trace, 2000);
     }
 
-    function moveTo(lng, lat, time)
+    function trace()
     {
+        $.post('${context}/monitor/position', { id : taskId, time : lastPositionTime }, function(result)
+        {
+            if (result.error && result.error.code) return console.error(result), setTimeout(trace, 2000);
 
+            if (result.data)
+            {
+                lastPositionTime = result.data.reportTime;
+                showCurrentPosition(result.data.longitude, result.data.latitude, result.data.reportTime);
+                if (vehicle) vehicle.moveTo(new BMap.Point(result.data.longitude, result.data.latitude), result.data.reportTime);
+            }
+
+            setTimeout(trace, 2000);
+        });
+    }
+
+    function showCurrentPosition(lng, lat, reportTime)
+    {
+        $('#lng').html('经度：' + String(lng).replace(/^(\d+\.\d{6})\d+$/gi, '$1'));
+        $('#lat').html('纬度：' + String(lat).replace(/^(\d+\.\d{6})\d+$/gi, '$1'));
+        $('#reportTime').html(new Date(reportTime).format());
     }
 
 </script>

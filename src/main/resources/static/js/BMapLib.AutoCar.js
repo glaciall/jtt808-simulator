@@ -266,12 +266,13 @@ var BMapLib = window.BMapLib = BMapLib || {};
                 if (viewport.containsPoint(q))
                 {
                     var meters = Math.sqrt(Math.pow(action.y - r, 2) + Math.pow(action.x - o, 2));
-                    if (meters > 2)
-                    {
+                    // 为了得到更平滑的动画移动效果，先屏蔽这个判断，如果要同屏显示大量图标可取消注释
+                    // if (meters > 2)
+                    // {
                         if(action.marker) action.marker.setPosition(q);
                         action.x = o;
                         action.y = r;
-                    }
+                    // }
                 }
 
                 if (action.idx >= action.steps)
@@ -314,6 +315,7 @@ var BMapLib = window.BMapLib = BMapLib || {};
         this._projection = this._map.getMapType().getProjection();
         this._opts = {icon: null, speed: 4000, defaultContent: "", landmarkPois : [], rotation : "0"};
         this._setOptions(e);
+        p.arrivalTime = e.time;
         if (!e.iconOffset) this._opts.iconOffset = new BMap.Size(0 - this._opts.icon.size.width / 2, 0 - this._opts.icon.size.height / 2);
         this._rotation = 0;
         if (!this._opts.icon instanceof BMap.Icon) {

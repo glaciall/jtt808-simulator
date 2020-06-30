@@ -1,5 +1,6 @@
 package cn.org.hentai.simulator.web.controller;
 
+import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.entity.TaskInfo;
 import cn.org.hentai.simulator.task.TaskManager;
 import cn.org.hentai.simulator.web.entity.Route;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/monitor")
-public class MapController extends BaseController
+public class MapMonitorController extends BaseController
 {
     @Autowired
     RouteService routeService;
@@ -60,7 +61,30 @@ public class MapController extends BaseController
     // TODO: 当前位置
     @RequestMapping("/position")
     @ResponseBody
-    public Result position(@RequestParam Long id)
+    public Result position(@RequestParam Long id, @RequestParam Long time)
+    {
+        Result result = new Result();
+        try
+        {
+            Point point = TaskManager.getInstance().getCurrentPositionById(id);
+            if (point != null && point.getReportTime() > time)
+            {
+                result.setData(point);
+            }
+        }
+        catch(Exception ex)
+        {
+            result.setError(ex);
+        }
+        return result;
+    }
+
+    // TODO: 日志
+
+    // TODO：终止行程
+    @RequestMapping("/terminate")
+    @ResponseBody
+    public Result terminate(@RequestParam Long id)
     {
         Result result = new Result();
         try
@@ -73,10 +97,6 @@ public class MapController extends BaseController
         }
         return result;
     }
-
-    // TODO: 日志
-
-    // TODO：终止行程
 
     // TODO：状态设置
 }

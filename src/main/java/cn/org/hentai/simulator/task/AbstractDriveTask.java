@@ -156,6 +156,7 @@ public abstract class AbstractDriveTask implements Driveable
         {
             info.setLongitude(currentPosition.getLongitude());
             info.setLatitude(currentPosition.getLatitude());
+            info.setReportTime(currentPosition.getReportTime());
         }
         info.setState(this.state.getName());
         return info;
