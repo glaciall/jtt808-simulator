@@ -99,4 +99,26 @@ public class MapMonitorController extends BaseController
     }
 
     // TODO：状态设置
+    @RequestMapping("/bit/set")
+    @ResponseBody
+    public Result setBit(@RequestParam Long id, @RequestParam String type, @RequestParam int bitIndex, @RequestParam Boolean on)
+    {
+        Result result = new Result();
+        try
+        {
+            if ("warning-flags".equals(type))
+            {
+                TaskManager.getInstance().setWarningFlagById(id, bitIndex, on);
+            }
+            if ("state-flags".equals(type))
+            {
+                TaskManager.getInstance().setStateFlagById(id, bitIndex, on);
+            }
+        }
+        catch(Exception ex)
+        {
+            result.setError(ex);
+        }
+        return result;
+    }
 }

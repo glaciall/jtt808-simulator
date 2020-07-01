@@ -22,6 +22,8 @@ public class TaskInfo
     private double longitude;
     private double latitude;
     private long reportTime;
+    private int stateFlags;
+    private int warningFlags;
 
     public TaskInfo withSimNumber(String sim)
     {
@@ -93,6 +95,38 @@ public class TaskInfo
     {
         setReportTime(time);
         return this;
+    }
+
+    public TaskInfo withStateFlags(int flags)
+    {
+        setStateFlags(flags);
+        return this;
+    }
+
+    public TaskInfo withWarningFlags(int flags)
+    {
+        setWarningFlags(flags);
+        return this;
+    }
+
+    public int getStateFlags()
+    {
+        return stateFlags;
+    }
+
+    public void setStateFlags(int stateFlags)
+    {
+        this.stateFlags = stateFlags;
+    }
+
+    public int getWarningFlags()
+    {
+        return warningFlags;
+    }
+
+    public void setWarningFlags(int warningFlags)
+    {
+        this.warningFlags = warningFlags;
     }
 
     public long getReportTime()
@@ -231,6 +265,8 @@ public class TaskInfo
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
                 ", reportTime=" + reportTime +
+                ", stateFlags=" + stateFlags +
+                ", warningFlags=" + warningFlags +
                 '}';
     }
 }

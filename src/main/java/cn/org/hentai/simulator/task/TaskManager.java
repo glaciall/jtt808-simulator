@@ -9,11 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -109,6 +106,34 @@ public final class TaskManager
             }
         }
         return null;
+    }
+
+    public void setStateFlagById(Long id, int index, boolean on)
+    {
+        synchronized (lock)
+        {
+            for (AbstractDriveTask task : tasks)
+            {
+                if (task.getId() == id)
+                {
+                    task.setStateFlag(index, on);
+                }
+            }
+        }
+    }
+
+    public void setWarningFlagById(Long id, int index, boolean on)
+    {
+        synchronized (lock)
+        {
+            for (AbstractDriveTask task : tasks)
+            {
+                if (task.getId() == id)
+                {
+                    task.setWarningFlag(index, on);
+                }
+            }
+        }
     }
 
     static final TaskManager instance = new TaskManager();

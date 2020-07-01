@@ -171,8 +171,8 @@ public class SimpleDriveTask extends AbstractDriveTask
                 JTT808Message msg = new JTT808Message();
                 msg.id = 0x0200;
                 Packet p = Packet.create(128)
-                        .addInt(point.getWarnFlags())                                                   // DWORD, 报警标志位
-                        .addInt(point.getStatus())                                                      // DWORD，状态
+                        .addInt(point.getWarnFlags() | getWarningFlags())                               // DWORD, 报警标志位
+                        .addInt(point.getStatus() | getStateFlags())                                    // DWORD，状态
                         .addInt((int)(point.getLatitude() * 100_0000))                                  // DWORD，纬度
                         .addInt((int)(point.getLongitude() * 100_0000))                                 // DWORD，经度
                         .addShort((short)0)                                                             // WORD，海拔

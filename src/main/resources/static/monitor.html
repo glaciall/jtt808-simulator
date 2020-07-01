@@ -8,7 +8,7 @@
     <style type="text/css">
         .content
         {
-            padding: 0px 300px 300px 0px;
+            padding: 0px 350px 300px 0px;
             position: relative;
         }
         .x-map
@@ -33,7 +33,7 @@
             position: absolute;
             right: 0px;
             top: 0px;
-            width: 300px;
+            width: 350px;
             height: 100%;
             border-left: solid 1px #cccccc;
             z-index: 100;
@@ -81,6 +81,49 @@
         .x-panel .x-panel-body .x-col-3
         {
             color: #999999;
+        }
+        .x-panel .x-panel-body h4
+        {
+            height: 30px;
+            line-height: 30px;
+            padding: 0px;
+            margin: 0px;
+            font-size: 16px;
+        }
+        .x-panel .x-panel-body h4 span
+        {
+            font-size: 12px;
+            font-weight: normal;
+            margin-left: 4px;
+            color: #999999;
+        }
+        .x-grids div
+        {
+            display: block;
+            width: 100%;
+            height: 24px;
+            line-height: 24px;
+            font-size: 10px;
+            font-family: consolas;
+            text-align: left;
+            background-color: #cccccc;
+            border: solid 1px #999999;
+            margin: 0px 4px 4px 0px;
+            padding-left: 4px;
+        }
+        .x-grids div.active
+        {
+            background-color: #0099ff;
+            color: #ffffff;
+        }
+        .x-grids div:hover
+        {
+            cursor: pointer;
+            background-color: #999999;
+        }
+        .x-grids div span
+        {
+            margin-left: 4px;
         }
     </style>
 </head>
@@ -154,10 +197,83 @@
                         <div class="x-clearfix"></div>
                     </div>
                     <hr />
+                    <h4>报警标志<span>点击置位，高亮表示相应位为1</span></h4>
+                    <div class="x-grids">
+                        <div>00<span>紧急报警，收到应答后清零</span></div>
+                        <div>01<span>超速报警</span></div>
+                        <div>02<span>疲劳驾驶</span></div>
+                        <div>03<span>危险预警，收到应答后清零</span></div>
+                        <div>04<span>GNSS模块发生故障</span></div>
+                        <div class="active">05<span>GNSS天线未接或被剪断</span></div>
+                        <div>06<span>GNSS天线短路</span></div>
+                        <div>07<span>终端主电源欠压</span></div>
+                        <div>08<span>终端主电源掉电</span></div>
+                        <div>09<span>终端LCD或显示器故障</span></div>
+                        <div>10<span>TTS模块故障</span></div>
+                        <div>11<span>摄像头故障</span></div>
+                        <div>12<span>道路运输证IC卡模块故障</span></div>
+                        <div>13<span>超速预警</span></div>
+                        <div>14<span>疲劳驾驶预警</span></div>
+                        <div>15<span>保留</span></div>
+                        <div>16<span>保留</span></div>
+                        <div>17<span>保留</span></div>
+                        <div>18<span>当天累计驾驶超时</span></div>
+                        <div>19<span>超时停车</span></div>
+                        <div>20<span>进出区域，收到应答后清零</span></div>
+                        <div>21<span>进出路线，收到应答后清零</span></div>
+                        <div>22<span>路段行驶时间不足/过长,收到应答后清零</span></div>
+                        <div>23<span>路线偏离报警</span></div>
+                        <div>24<span>车辆VSS故障</span></div>
+                        <div>25<span>车辆油量异常</span></div>
+                        <div>26<span>车辆被盗（通过车辆防盗器）</span></div>
+                        <div>27<span>车辆非法点火，收到应答后清零</span></div>
+                        <div>28<span>车辆非法位移，收到应答后清零</span></div>
+                        <div>29<span>碰撞预警</span></div>
+                        <div>30<span>侧翻预警</span></div>
+                        <div>31<span>非法开门报警，收到应答后清零</span></div>
+                    </div>
+                    <h4>状态位<span>点击置位，高亮表示相应位为1</span></h4>
+                    <div class="x-grids">
+                        <div>00<span>ACC状态</span></div>
+                        <div>01<span>定位</span></div>
+                        <div>02<span>纬度</span></div>
+                        <div>03<span>经度</span></div>
+                        <div>04<span>运营状态</span></div>
+                        <div class="active">05<span>加密</span></div>
+                        <div>06<span>保留</span></div>
+                        <div>07<span>保留</span></div>
+                        <div>08<span>车载状态(高位)</span></div>
+                        <div>09<span>车载状态(低位)</span></div>
+                        <div>10<span>车辆油路</span></div>
+                        <div>11<span>车辆电路</span></div>
+                        <div>12<span>车锁状态</span></div>
+                        <div>13<span>前门</span></div>
+                        <div>14<span>中门</span></div>
+                        <div>15<span>后门</span></div>
+                        <div>16<span>驾驶席门</span></div>
+                        <div>17<span>自定义车门</span></div>
+                        <div>18<span>GPS定位</span></div>
+                        <div>19<span>北斗定位</span></div>
+                        <div>20<span>GLONASS定位</span></div>
+                        <div>21<span>Galileo定位</span></div>
+                        <div>22<span>保留</span></div>
+                        <div>23<span>保留</span></div>
+                        <div>24<span>保留</span></div>
+                        <div>25<span>保留</span></div>
+                        <div>26<span>保留</span></div>
+                        <div>27<span>保留</span></div>
+                        <div>28<span>保留</span></div>
+                        <div>29<span>保留</span></div>
+                        <div>30<span>保留</span></div>
+                        <div>31<span>保留</span></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div class="x-hint">
+
 </div>
 </body>
 </html>

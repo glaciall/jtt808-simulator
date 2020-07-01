@@ -37,6 +37,11 @@ public abstract class AbstractDriveTask implements Driveable
 
     private Point currentPosition;
 
+    // 报警标志位
+    private int warningFlags = 0;
+    // 状态标志位，ACC开，已定位，已使用GPS定位
+    private int stateFlags = (1 << 0) | (1 << 1) | (1 << 18);
+
     // 日志信息：在调试模式时记录下来
     private Object logs;
 
@@ -59,6 +64,16 @@ public abstract class AbstractDriveTask implements Driveable
     public long getRouteId()
     {
         return this.routeId;
+    }
+
+    public final int getWarningFlags()
+    {
+        return this.warningFlags;
+    }
+
+    public final int getStateFlags()
+    {
+        return this.stateFlags;
     }
 
     /**
@@ -157,9 +172,23 @@ public abstract class AbstractDriveTask implements Driveable
             info.setLongitude(currentPosition.getLongitude());
             info.setLatitude(currentPosition.getLatitude());
             info.setReportTime(currentPosition.getReportTime());
+            info.setStateFlags(this.stateFlags);
+            info.setWarningFlags(this.warningFlags);
         }
         info.setState(this.state.getName());
         return info;
+    }
+
+    public void setStateFlag(int index, boolean on)
+    {
+        if (on == false) this.stateFlags &= ~(1 << index);
+        else this.stateFlags |= (1 << index);
+    }
+
+    public void setWarningFlag(int index, boolean on)
+    {
+        if (on == false) this.warningFlags &= ~(1 << index);
+        else this.warningFlags |= (1 << index);
     }
 
     // 发送消息
