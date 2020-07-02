@@ -107,3 +107,12 @@ public final void executeConstantly(Executable executable, int interval);
 ```
 
 ## 后记
+### QQ群
+群号：808432702，欢迎入群，与一帮子做部标协议开发的小伙伴一起交流。
+
+### 推荐
+1. [我的博客](https://www.hentai.org.cn/)
+2. [jtt1078-video-server 1078开源音视频服务器java实现]()
+3. [JT/1078音视频传输协议开发指南](https://www.hentai.org.cn/article?id=8)
+4. [JT/1078 RTP消息包在线解析工具](https://www.hentai.org.cn/format/)
+
