@@ -18,6 +18,7 @@
             height: 100%;
             background-color: #ffffff;
             border-right: solid 1px #666666;
+            z-index: 20;
         }
         #panel h4 { height: 30px; line-height: 30px; margin: 20px 0px 10px 0px; padding-left: 10px; font-size: 16px; border-bottom: solid 1px #cccccc; }
         #panel h4:first-child { margin-top: 0px !important; height: 40px; line-height: 40px; padding-right: 10px; box-sizing: border-box; }
@@ -29,17 +30,68 @@
         #panel #btn-locate-point { margin-right: 5px; }
         #map { width: 100%; height: 100%; }
         .anchorBL { display: none !important; }
+
+        .x-search-box
+        {
+            width: 100%;
+            height: 40px;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding-left: 410px;
+            z-index: 10;
+        }
+        .x-search-box .x-row input { width: 100%; height: 30px; outline: none; border: none; margin-top: 5px; }
+        .x-search-box .x-row button { margin-top: 5px; }
+        .x-search-box .x-row { margin-left: -10px; margin-right: -10px; }
+        .x-search-box .x-col-3, .x-search-box .x-col-1 { padding-left: 10px; padding-right: 10px; }
+        .x-search-box #x-poi-list
+        {
+            position: absolute;
+            top: 41px;
+            left: 440px;
+            width: 600px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            display: none;
+        }
+        .x-search-box #x-poi-list a, .x-search-box #x-poi-list a:visited
+        {
+            display: block;
+            height: 30px;
+            line-height: 30px;
+            color: #ffffff;
+            padding-left: 5px;
+        }
+        .x-search-box #x-poi-list a:hover
+        {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .x-search-box #x-poi-list a button
+        {
+            float: right;
+            margin-top: 3px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <#include "inc/sidebar.ftl">
     <div class="content">
+        <div class="x-search-box">
+            <div class="x-row">
+                <div class="x-col-3"><input type="text" placeholder="出发地点" id="startAddress" /></div>
+                <div class="x-col-3"><input type="text" placeholder="目标地点" id="endAddress" /></div>
+                <div class="x-col-1"><button id="btn-plan" class="btn btn-blue">线路规划</button></div>
+                <div class="x-clearfix"></div>
+            </div>
+            <div id="x-poi-list"></div>
+        </div>
         <div id="panel">
             <h4>
                 线路设置
                 <button id="btn-save" class="btn btn-sm btn-blue">保存</button>
-                <button id="btn-plan" class="btn btn-sm btn-orange">线路规划</button>
                 <button id="btn-measure" class="btn btn-sm btn-gray">测距</button>
             </h4>
             <div class="x-row">
@@ -320,6 +372,21 @@
         map.enableScrollWheelZoom();
         ruler = new BMapLib.DistanceTool(map);
 
+        localSearch = new BMap.LocalSearch(map, {
+            onSearchComplete : function(result)
+            {
+                if (!result) return $('#x-poi-list').html('');
+                var shtml = '';
+                for (var i = 0; i < result.getCurrentNumPois(); i++)
+                {
+                    var poi = result.getPoi(i);
+                    var p = poi.point;
+                    shtml += '<a href="javascript:;" x-longitude="' + p.lng + '" x-latitude="' + p.lat + '">' + poi.title + '<button class="btn btn-blue btn-sm" onclick="chooseAddress(' + p.lng + ', ' + p.lat + ')">选择</button></a>';
+                }
+                $('#x-poi-list').html(shtml);
+            }
+        });
+
         map.addEventListener('click', function(e)
         {
             var point = e.point;
@@ -346,64 +413,6 @@
         {
             var pid = $(this).attr('x-id');
             route.locateSegment(pid);
-        });
-
-        $('#btn-plan').click(function()
-        {
-            var saddress = prompt("起点", "北京"), eaddress = prompt("终点", "广州");
-            if (saddress.length == 0 || eaddress.length == 0)
-                return toastr('warning', '请输入起点以及终点地址！');
-
-            $('#route-duration').html('-');
-            $('#route-distance').html('-');
-
-            map.clearOverlays();
-            route.points = [];
-            route.stayPoints = [];
-            route.troubleSegments = [];
-
-            var transit = new BMap.DrivingRoute(map, {
-                renderOptions: {
-                    map: map,
-                    enableDragging : true
-                },
-                onSearchComplete : function(result)
-                {
-                    if (result.getNumPlans() == 0) return;
-                    var plan = result.getPlan(0);
-                    var duration = plan.getDuration();
-                    var distance = plan.getDistance();
-                    $('#route-duration').html(duration);
-                    $('#route-distance').html(distance);
-
-                    route.mileages = plan.getDistance(false);
-                },
-                onPolylinesSet : function(routes)
-                {
-                    var points = [];
-                    for (var i = 0; i < routes.length; i++)
-                    {
-                        var line = routes[i].getPolyline();
-                        line.setStrokeColor('#ffffff');
-                        points = points.concat(line.getPath());
-                    }
-                    if (points.length == 0) return toastr('warning', '无法完成从 ' + saddress + ' 到 ' + eaddress + ' 的线路规划！');
-
-                    // 点集合
-                    for (var i = 0; i < points.length; i++)
-                    {
-                        points[i].index = i;
-                    }
-
-                    route.points = points;
-                    route.stayPoints = [];
-                    route.troubleSegments = [];
-                    route.__generate_stay_point_rows();
-                    route.__generate_segment_rows();
-                    isMarkMode = false;
-                }
-            });
-            transit.search(saddress, eaddress);
         });
 
         $('#btn-add-point').click(function()
@@ -500,6 +509,60 @@
         });
     });
 
+    function doRoutePlan(startPoint, endPoint)
+    {
+        $('#route-duration').html('-');
+        $('#route-distance').html('-');
+
+        map.clearOverlays();
+        route.points = [];
+        route.stayPoints = [];
+        route.troubleSegments = [];
+
+        var transit = new BMap.DrivingRoute(map, {
+            renderOptions: {
+                map: map,
+                enableDragging : true
+            },
+            onSearchComplete : function(result)
+            {
+                if (result.getNumPlans() == 0) return;
+                var plan = result.getPlan(0);
+                var duration = plan.getDuration();
+                var distance = plan.getDistance();
+                $('#route-duration').html(duration);
+                $('#route-distance').html(distance);
+
+                route.mileages = plan.getDistance(false);
+            },
+            onPolylinesSet : function(routes)
+            {
+                var points = [];
+                for (var i = 0; i < routes.length; i++)
+                {
+                    var line = routes[i].getPolyline();
+                    line.setStrokeColor('#ffffff');
+                    points = points.concat(line.getPath());
+                }
+                if (points.length == 0) return toastr('warning', '无法完成从 ' + saddress + ' 到 ' + eaddress + ' 的线路规划！');
+
+                // 点集合
+                for (var i = 0; i < points.length; i++)
+                {
+                    points[i].index = i;
+                }
+
+                route.points = points;
+                route.stayPoints = [];
+                route.troubleSegments = [];
+                route.__generate_stay_point_rows();
+                route.__generate_segment_rows();
+                isMarkMode = false;
+            }
+        });
+        transit.search(startPoint, endPoint);
+    }
+
     function toJson(list)
     {
         var xx = [];
@@ -557,6 +620,58 @@
 
         var routeLine = new BMap.Polyline(route.points, { strokeColor : '#ffffff', opacity : 1 });
         map.addOverlay(routeLine);
+    }
+
+</script>
+
+<script type="text/javascript">
+    var startPoint, endPoint;
+    var searchTimeout = 0;
+    var currentAddressType;
+    var currentPoiMarker = null;
+    var localSearch = null;
+
+    $(document).ready(function()
+    {
+        $(document).on('mouseenter', 'div[id=x-poi-list] a', function(e)
+        {
+            var el = $(this);
+            if (currentPoiMarker) map.removeOverlay(currentPoiMarker);
+            var point = new BMap.Point(el.attr('x-longitude'), el.attr('x-latitude'));
+            map.addOverlay(currentPoiMarker = new BMap.Marker(point));
+            currentPoiMarker.setAnimation(BMAP_ANIMATION_BOUNCE);
+            map.centerAndZoom(point, 16);
+        });
+
+        $('#btn-plan').click(function()
+        {
+            if (!startPoint) return toastr('error', '请选择起点');
+            if (!endPoint) return toastr('error', '请选择终点');
+            doRoutePlan(startPoint, endPoint);
+        });
+
+        $('#startAddress, #endAddress').keyup(function()
+        {
+            var el = $(this);
+            var pos = el.position();
+            $('#x-poi-list').css({ display : 'block', 'top' : pos.top + 41, 'left' : pos.left });
+
+            var key = el.val();
+            currentAddressType = el.attr('id');
+            if (searchTimeout) clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function()
+            {
+                localSearch.search(key);
+            }, 30);
+        });
+    });
+
+    function chooseAddress(lng, lat)
+    {
+        var p = new BMap.Point(lng, lat);
+        $('#x-poi-list').fadeOut();
+        if (currentAddressType == 'startAddress') startPoint = p;
+        else endPoint = p;
     }
 
 </script>

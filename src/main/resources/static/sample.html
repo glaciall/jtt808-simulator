@@ -5,6 +5,77 @@
     <title>Title</title>
     <link rel="stylesheet" type="text/css" href="css/common.css" />
     <link rel="stylesheet" type="text/css" href="proton/css/font-awesome.min.css" />
+    <style type="text/css">
+        .content
+        {
+            position: relative;
+            padding-left: 400px;
+        }
+        .content #panel
+        {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 400px;
+            height: 100%;
+            background-color: #ffffff;
+            border-right: solid 1px #666666;
+            z-index: 20;
+        }
+        #panel h4 { height: 30px; line-height: 30px; margin: 20px 0px 10px 0px; padding-left: 10px; font-size: 16px; border-bottom: solid 1px #cccccc; }
+        #panel h4:first-child { margin-top: 0px !important; height: 40px; line-height: 40px; padding-right: 10px; box-sizing: border-box; }
+        #panel h4:first-child button { margin-top: 7px; }
+        #panel h4 a { float: right; margin-right: 10px; }
+        #panel h4 button { float: right; }
+        #panel .x-row { height: 30px; line-height: 30px; }
+        #panel .x-col-7 input[type=text] { min-width: 200px; }
+        #panel #btn-locate-point { margin-right: 5px; }
+        #map { width: 100%; height: 100%; background-color: #08304a; }
+        .anchorBL { display: none !important; }
+
+        .x-search-box
+        {
+            width: 100%;
+            height: 40px;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding-left: 410px;
+            z-index: 10;
+        }
+        .x-search-box .x-row input { width: 100%; height: 30px; outline: none; border: none; margin-top: 5px; }
+        .x-search-box .x-row button { margin-top: 5px; }
+        .x-search-box .x-row { margin-left: -10px; margin-right: -10px; }
+        .x-search-box .x-col-3, .x-search-box .x-col-1 { padding-left: 10px; padding-right: 10px; }
+        .x-search-box #x-poi-list
+        {
+            position: absolute;
+            top: 41px;
+            left: 440px;
+            width: 600px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            display: none;
+        }
+        .x-search-box #x-poi-list a, .x-search-box #x-poi-list a:visited
+        {
+            display: block;
+            height: 30px;
+            line-height: 30px;
+            color: #ffffff;
+            padding-left: 5px;
+        }
+        .x-search-box #x-poi-list a:hover
+        {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .x-search-box #x-poi-list a button
+        {
+            float: right;
+            margin-top: 3px;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -20,8 +91,138 @@
         </ul>
     </div>
     <div class="content">
-        内容区
+        <div class="x-search-box">
+            <div class="x-row">
+                <div class="x-col-3"><input type="text" placeholder="出发地点" id="startAddress" /></div>
+                <div class="x-col-3"><input type="text" placeholder="目标地点" id="endAddress" /></div>
+                <div class="x-col-1"><button id="btn-plan" class="btn btn-blue">线路规划</button></div>
+                <div class="x-clearfix"></div>
+            </div>
+            <div id="x-poi-list"></div>
+        </div>
+        <div id="panel">
+            <h4>
+                线路设置
+                <button id="btn-save" class="btn btn-sm btn-blue">保存</button>
+                <button id="btn-measure" class="btn btn-sm btn-gray">测距</button>
+            </h4>
+            <div class="x-row">
+                <div class="x-col-3 text-right">线路总里程：</div>
+                <div class="x-col-7">
+                    <span id="route-distance">-</span>
+                </div>
+                <div class="x-clearfix"></div>
+            </div>
+            <div class="x-row">
+                <div class="x-col-3 text-right">行程耗时估计：</div>
+                <div class="x-col-7"><span id="route-duration">-</span></div>
+                <div class="x-clearfix"></div>
+            </div>
+            <div class="x-row">
+                <div class="x-col-3 text-right">名称：</div>
+                <div class="x-col-7"><input type="text" id="name" placeholder="比如：北京~上海 早班线路" value="" /></div>
+                <div class="x-clearfix"></div>
+            </div>
+            <div class="x-row">
+                <div class="x-col-3 text-right">最低时速：</div>
+                <div class="x-col-7"><input type="text" id="minSpeed" placeholder="公里/小时" value=""/></div>
+                <div class="x-clearfix"></div>
+            </div>
+            <div class="x-row">
+                <div class="x-col-3 text-right">最高时速：</div>
+                <div class="x-col-7"><input type="text" id="maxSpeed" placeholder="公里/小时" value=""/></div>
+                <div class="x-clearfix"></div>
+            </div>
+
+            <h4>停留点<a href="javascript:;" id="btn-add-point"><i class="fa fa-crosshairs"></i> 添加</a></h4>
+            <div class="x-row text-center">
+                <div class="x-col-2">#</div>
+                <div class="x-col-2">最短</div>
+                <div class="x-col-2">最长</div>
+                <div class="x-col-2">概率</div>
+                <div class="x-col-2">-</div>
+                <div class="x-clearfix"></div>
+            </div>
+            <div id="x-stay-points"></div>
+
+            <h4>问题路段<a href="javascript:;" id="btn-add-segment"><i class="fa fa-wheelchair-alt"></i> 添加</a></h4>
+            <div class="x-row text-center">
+                <div class="x-col-2">#</div>
+                <div class="x-col-4">安全事件</div>
+                <div class="x-col-2">概率</div>
+                <div class="x-col-2">-</div>
+                <div class="x-clearfix"></div>
+            </div>
+            <div id="x-trouble-segments"></div>
+        </div>
+        <div id="map"></div>
     </div>
 </div>
+<script type="text/javascript" src="//api.map.baidu.com/getscript?v=2.0&ak=pFIG4twCDUZWu6ViZsv8jQAFH2NmHxc7&services=&t=20180917142401"></script>
+<script type="text/javascript" src="proton/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+    var map = null;
+    map = new BMap.Map('map', { enableMapClick : false });
+    map.centerAndZoom('中国', 6);
+    map.setMapStyle({ style : 'midnight' });
+    map.enableScrollWheelZoom();
+
+    var startPoint, endPoint;
+    var searchTimeout = 0;
+    var currentAddressType;
+    var currentPoiMarker = null;
+    var localSearch = new BMap.LocalSearch(map, {
+        onSearchComplete : function(result)
+        {
+            if (!result) return $('#x-poi-list').html('');
+            var shtml = '';
+            for (var i = 0; i < result.getCurrentNumPois(); i++)
+            {
+                var poi = result.getPoi(i);
+                var p = poi.point;
+                shtml += '<a href="javascript:;" x-longitude="' + p.lng + '" x-latitude="' + p.lat + '">' + poi.title + '<button class="btn btn-blue btn-sm" onclick="chooseAddress(' + p.lng + ', ' + p.lat + ')">选择</button></a>';
+            }
+            $('#x-poi-list').html(shtml);
+        }
+    });
+
+    $(document).on('mouseenter', 'div[id=x-poi-list] a', function(e)
+    {
+        var el = $(this);
+        if (currentPoiMarker) map.removeOverlay(currentPoiMarker);
+        var point = new BMap.Point(el.attr('x-longitude'), el.attr('x-latitude'));
+        map.addOverlay(currentPoiMarker = new BMap.Marker(point));
+        currentPoiMarker.setAnimation(BMAP_ANIMATION_BOUNCE);
+        map.centerAndZoom(point, 16);
+    });
+
+    $('#btn-plan').click(function()
+    {
+        alert('开始规划了。。。');
+    });
+
+    function chooseAddress(lng, lat)
+    {
+        var p = new BMap.Point(lng, lat);
+        $('#x-poi-list').fadeOut();
+        if (currentAddressType == 'startAddress') startPoint = p;
+        else endPoint = p;
+    }
+
+    $('#startAddress, #endAddress').keyup(function()
+    {
+        var el = $(this);
+        var pos = el.position();
+        $('#x-poi-list').css({ display : 'block', 'top' : pos.top + 41, 'left' : pos.left });
+
+        var key = el.val();
+        currentAddressType = el.attr('id');
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function()
+        {
+            localSearch.search(key);
+        }, 30);
+    });
+</script>
 </body>
 </html>
