@@ -504,7 +504,7 @@
             {
                 if (result.error && result.error.code) return alert(result.error.reason);
                 alert('保存成功');
-                window.close();
+                location.href = '${context}/route/index';
             });
         });
     });
