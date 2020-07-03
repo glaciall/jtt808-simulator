@@ -42,6 +42,7 @@ public final class EventDispatcher
                 logger.error("no event handler for: {}:::{}", tag, attachment);
                 return;
             }
+            Method gMethod = listenerMap.get(className + ":::" + tag + ":::");
 
             // TODO: 暂时只有一个参数或没有参数，后面再想办法做参数类型匹配，按需赋值，就跟spring一样
 
@@ -52,6 +53,17 @@ public final class EventDispatcher
                 {
                     Object[] args = new Object[method.getParameterCount()];
                     if (args.length == 1) args[0] = data;
+
+                    try
+                    {
+                        // 触发一下message_received事件的回调
+                        if (gMethod != null && gMethod.equals(method) == false)
+                        {
+                            gMethod.invoke(driveTask, args);
+                        }
+                    }
+                    catch(Exception e) { e.printStackTrace(); }
+
                     try { method.invoke(driveTask, args); } catch(Exception e) { e.printStackTrace(); }
                 }
             });

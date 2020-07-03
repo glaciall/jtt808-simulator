@@ -62,10 +62,11 @@ public class SimpleDriveTask extends AbstractDriveTask
         pool.close(connectionId);
     }
 
+    // 通用下行消息回调，先执行这个方法，后再按消息ID进行路由，所以最好不要在这里做应答
     @Listen(when = EventEnum.message_received)
     public void onServerMessage(JTT808Message msg)
     {
-        // TODO: 得想个办法把这个方法也触发一下，做一些通用的处理
+        log(LogType.MESSAGE_IN, ByteUtils.toString(JTT808Encoder.encode(msg)));
     }
 
     @Listen(when = EventEnum.connected)
@@ -101,7 +102,6 @@ public class SimpleDriveTask extends AbstractDriveTask
         logger.debug(String.format("answer -> seq: %4d, id: %04x, result: %02d", answerSequence, answerMessageId, result));
 
         // TODO: 应该整个hashmap保存上一次发送的消息ID，KEY为流水号
-
         switch (lastSentMessageId)
         {
             // 其它就不管了
