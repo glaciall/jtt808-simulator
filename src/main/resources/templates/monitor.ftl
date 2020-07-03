@@ -135,13 +135,12 @@
             <div class="x-panel">
                 <h3>行程任务日志</h3>
                 <div class="x-panel-body">
-                    <table class="table table-bordered table-striped table-condensed table-hover">
+                    <table id="logs" class="table table-bordered table-striped table-condensed table-hover">
                         <thead>
                         <tr>
-                            <th>#</th>
-                            <th>类型</th>
-                            <th>时间</th>
-                            <th>内容</th>
+                            <th align="center">类型</th>
+                            <th align="center">时间</th>
+                            <th align="left">内容</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -285,6 +284,7 @@
     var map = null;
     var vehicle = null;
     var lastPositionTime = 0;
+    var lastLogTime = 0;
 
     $(document).ready(function()
     {
@@ -369,9 +369,43 @@
             showCurrentPosition(info.longitude, info.latitude, info.reportTime);
 
             vehicle.show();
+
+            loadLogs();
         });
 
         setTimeout(trace, 2000);
+    }
+
+    function loadLogs()
+    {
+        $.post('${context}/monitor/logs', { id : taskId, timeAfter : lastLogTime }, function(result)
+        {
+            if (result.error && result.error.code) return console.error(result), setTimeout(loadLogs, 2000);
+            var logs = result.data;
+            var table = $('#logs');
+            for (var i = 0; logs && i < logs.length; i++)
+            {
+                var item = logs[i];
+                var type = item.type;
+                if (item.type == 'MESSAGE_IN') type = '下行消息';
+                else if (item.type == 'MESSAGE_OUT') type = '上行消息';
+                else if (item.type == 'STATE') type = '状态变化';
+                else if (item.type == 'EXCEPTION') type = '异常';
+                else if (item.type == 'USER_TRIGGER') type = '用户触发';
+
+                var shtml = '';
+                shtml += '<tr>';
+                shtml += '  <td align="center">' + type + '</td>';
+                shtml += '  <td align="center">' + new Date(item.time).format('yyyy-MM-dd hh:mm:ss') + '</td>';
+                shtml += '  <td align="left">' + (item.attachment || '--') + '</td>';
+                shtml += '</tr>';
+
+                table.prepend(shtml);
+                lastLogTime = item.time;
+            }
+
+            setTimeout(loadLogs, 2000);
+        });
     }
 
     function trace()

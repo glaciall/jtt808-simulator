@@ -3,6 +3,7 @@ package cn.org.hentai.simulator.web.controller;
 import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.entity.TaskInfo;
 import cn.org.hentai.simulator.task.TaskManager;
+import cn.org.hentai.simulator.task.log.Log;
 import cn.org.hentai.simulator.web.entity.Route;
 import cn.org.hentai.simulator.web.service.RouteService;
 import cn.org.hentai.simulator.web.vo.Result;
@@ -13,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/monitor")
@@ -80,6 +83,23 @@ public class MapMonitorController extends BaseController
     }
 
     // TODO: 日志
+    @RequestMapping("/logs")
+    @ResponseBody
+    public Result logs(@RequestParam Long id, @RequestParam(defaultValue = "0") Long timeAfter)
+    {
+        Result result = new Result();
+        try
+        {
+            List<Log> logs = TaskManager.getInstance().getLogsById(id, timeAfter);
+
+            result.setData(logs);
+        }
+        catch(Exception ex)
+        {
+            result.setError(ex);
+        }
+        return result;
+    }
 
     // TODO：终止行程
     @RequestMapping("/terminate")

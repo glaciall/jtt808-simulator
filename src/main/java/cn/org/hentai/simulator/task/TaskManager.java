@@ -4,13 +4,13 @@ import cn.org.hentai.simulator.entity.DrivePlan;
 import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.entity.TaskInfo;
 import cn.org.hentai.simulator.manager.RouteManager;
+import cn.org.hentai.simulator.task.log.Log;
 import cn.org.hentai.simulator.web.vo.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -21,14 +21,27 @@ public final class TaskManager
     static Logger logger = LoggerFactory.getLogger(TaskManager.class);
 
     Object lock;
-    LinkedList<AbstractDriveTask> tasks;
+    // TODO: map的value是无序的，不好做分页，得想个办法
+    ConcurrentHashMap<Long, AbstractDriveTask> tasks;
     AtomicLong sequence;
     AtomicLong index;
+
+    static final Comparator<AbstractDriveTask> SORT_COMPARATOR = new Comparator<AbstractDriveTask>()
+    {
+        @Override
+        public int compare(AbstractDriveTask o1, AbstractDriveTask o2)
+        {
+            long x = o1.getId() - o2.getId();
+            if (x > 0) return 1;
+            else if (x == 0) return 0;
+            else return -1;
+        }
+    };
 
     private TaskManager()
     {
         this.lock = new Object();
-        this.tasks = new LinkedList<>();
+        this.tasks = new ConcurrentHashMap<Long, AbstractDriveTask>();
 
         this.index = new AtomicLong(0L);
         this.sequence = new AtomicLong(0L);
@@ -48,10 +61,7 @@ public final class TaskManager
         task.init(params, plan);
         task.startup();
 
-        synchronized (lock)
-        {
-            tasks.add(task);
-        }
+        tasks.put(task.getId(), task);
     }
 
     public long nextIndex()
@@ -62,78 +72,51 @@ public final class TaskManager
     // 分页查找，用于列表显示运行中的行程任务状态
     public Page<TaskInfo> find(int pageIndex, int pageSize)
     {
-        synchronized (lock)
+        AbstractDriveTask[] list = tasks.values().toArray(new AbstractDriveTask[0]);
+        Arrays.sort(list, SORT_COMPARATOR);
+        List<TaskInfo> results = new ArrayList<TaskInfo>(pageSize);
+        for (int i = Math.max(pageIndex - 1 * pageSize, 0); i < pageSize && i < list.length; i++)
         {
-            Page<TaskInfo> page = new Page(pageIndex, pageSize);
-            page.setRecordCount(tasks.size());
-            LinkedList<TaskInfo> list = new LinkedList<>();
-            for (AbstractDriveTask task : tasks.subList(Math.max(pageIndex - 1 * pageSize, 0), Math.min(pageIndex * pageSize, tasks.size())))
-            {
-                list.add(task.getInfo());
-            }
-            page.setList(list);
-            return page;
+            results.add(list[i].getInfo());
         }
+        Page<TaskInfo> page = new Page(pageIndex, pageSize);
+        page.setList(results);
+        page.setRecordCount(list.length);
+        return page;
+    }
+
+    public List<Log> getLogsById(Long id, long timeAfter)
+    {
+        AbstractDriveTask task = tasks.get(id);
+        if (task != null) return task.getLogs(timeAfter);
+        else return null;
     }
 
     public TaskInfo getById(Long id)
     {
         TaskInfo info = null;
-        synchronized (lock)
-        {
-            for (AbstractDriveTask task : tasks)
-            {
-                if (task.getId() == id)
-                {
-                    info = task.getInfo();
-                    break;
-                }
-            }
-        }
-        return info;
+        AbstractDriveTask task = tasks.get(id);
+        if (task == null) return null;
+        else return task.getInfo();
     }
 
     public Point getCurrentPositionById(Long id)
     {
-        synchronized (lock)
-        {
-            for (AbstractDriveTask task : tasks)
-            {
-                if (task.getId() == id)
-                {
-                    return task.getCurrentPosition();
-                }
-            }
-        }
-        return null;
+        AbstractDriveTask task = tasks.get(id);
+        if (task == null) return null;
+        else return task.getCurrentPosition();
     }
 
     public void setStateFlagById(Long id, int index, boolean on)
     {
-        synchronized (lock)
-        {
-            for (AbstractDriveTask task : tasks)
-            {
-                if (task.getId() == id)
-                {
-                    task.setStateFlag(index, on);
-                }
-            }
-        }
+        AbstractDriveTask task = tasks.get(id);
+        if (task != null) task.setStateFlag(index, on);
     }
 
     public void setWarningFlagById(Long id, int index, boolean on)
     {
-        synchronized (lock)
-        {
-            for (AbstractDriveTask task : tasks)
-            {
-                if (task.getId() == id)
-                {
-                    task.setWarningFlag(index, on);
-                }
-            }
-        }
+        AbstractDriveTask task = tasks.get(id);
+        if (task != null) task.setWarningFlag(index, on);
     }
 
     static final TaskManager instance = new TaskManager();

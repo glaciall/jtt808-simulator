@@ -1,6 +1,7 @@
 package cn.org.hentai.simulator.task.event;
 
 import cn.org.hentai.simulator.task.AbstractDriveTask;
+import cn.org.hentai.simulator.task.log.LogType;
 import cn.org.hentai.simulator.task.runner.RunnerManager;
 import cn.org.hentai.simulator.task.runner.Executable;
 import org.slf4j.Logger;
@@ -37,7 +38,8 @@ public final class EventDispatcher
             Method method = listenerMap.get(mName);
             if (method == null)
             {
-                driveTask.log("no event handler for: " + tag + ":::" + attachment);
+                // TODO: 是否有必要收集，以及是否应该交由LoopRunner去执行？
+                logger.error("no event handler for: {}:::{}", tag, attachment);
                 return;
             }
 

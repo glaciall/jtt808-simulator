@@ -4,13 +4,15 @@ import cn.org.hentai.simulator.entity.DrivePlan;
 import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.entity.TaskInfo;
 import cn.org.hentai.simulator.jtt808.JTT808Message;
+import cn.org.hentai.simulator.task.log.Log;
+import cn.org.hentai.simulator.task.log.LogType;
 import cn.org.hentai.simulator.task.runner.Executable;
 import cn.org.hentai.simulator.task.runner.RunnerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by matrixy when 2020/5/8.
@@ -43,7 +45,7 @@ public abstract class AbstractDriveTask implements Driveable
     private int stateFlags = (1 << 0) | (1 << 1) | (1 << 18);
 
     // 日志信息：在调试模式时记录下来
-    private Object logs;
+    private ConcurrentLinkedQueue<Log> logs;
 
     // TODO: 需要把几个常用的，用于显示在表格上的属性值，整成成员属性，避免对Map的并发读写
     TaskInfo info;
@@ -54,6 +56,7 @@ public abstract class AbstractDriveTask implements Driveable
     {
         this.id = id;
         this.routeId = routeId;
+        this.logs = new ConcurrentLinkedQueue<Log>();
     }
 
     public long getId()
@@ -74,6 +77,33 @@ public abstract class AbstractDriveTask implements Driveable
     public final int getStateFlags()
     {
         return this.stateFlags;
+    }
+
+    public final void log(LogType type, String attachment)
+    {
+        // 只在DEBUG模式下才记录日志
+        if ("debug".equals(mode) == false) return;
+        this.logs.add(new Log(type, System.currentTimeMillis(), attachment));
+    }
+
+    /**
+     * 获取timeAfter时间之后的所有日志
+     * @param timeAfter
+     * @return
+     */
+    public final List<Log> getLogs(long timeAfter)
+    {
+        Iterator<Log> itr = this.logs.iterator();
+        List<Log> results = new LinkedList();
+
+        // TODO: 想办法整一个双端链表，避免头部无意义的空转
+        for (int i = 0; itr.hasNext(); i++)
+        {
+            Log item = itr.next();
+            if (item.time <= timeAfter) continue;
+            results.add(item);
+        }
+        return results;
     }
 
     /**
@@ -111,16 +141,6 @@ public abstract class AbstractDriveTask implements Driveable
     public final Point getCurrentPosition()
     {
         return currentPosition;
-    }
-
-    // HINT: 整个日志吧，而且要根据当前的模式来决定是不是真的保存下来
-    public final void log(String msg)
-    {
-        // 日志的要素有什么？时间就调用时的时间，类型：网络类/用户交互/服务器交互/其它、数据
-
-        if ("debug".equals(this.mode) == false) return;
-        // HOWTO: 保存到什么地方好呢？
-        logger.info(msg);
     }
 
     /**
@@ -161,7 +181,7 @@ public abstract class AbstractDriveTask implements Driveable
     @Override
     public void terminate()
     {
-        log("task terminated");
+        log(LogType.STATE, "terminated");
         this.state = TaskState.terminated;
     }
 

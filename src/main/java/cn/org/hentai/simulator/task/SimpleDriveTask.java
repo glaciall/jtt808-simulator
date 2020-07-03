@@ -1,10 +1,13 @@
 package cn.org.hentai.simulator.task;
 
 import cn.org.hentai.simulator.entity.Point;
+import cn.org.hentai.simulator.jtt808.JTT808Encoder;
 import cn.org.hentai.simulator.jtt808.JTT808Message;
 import cn.org.hentai.simulator.task.event.EventEnum;
 import cn.org.hentai.simulator.task.event.Listen;
 import cn.org.hentai.simulator.task.event.EventDispatcher;
+import cn.org.hentai.simulator.task.log.LogType;
+import cn.org.hentai.simulator.task.net.JT808MessageEncoder;
 import cn.org.hentai.simulator.task.runner.Executable;
 import cn.org.hentai.simulator.task.net.ConnectionPool;
 import cn.org.hentai.simulator.util.ByteUtils;
@@ -68,7 +71,7 @@ public class SimpleDriveTask extends AbstractDriveTask
     @Listen(when = EventEnum.connected)
     public void onConnected()
     {
-        log("connected");
+        log(LogType.STATE, "connected");
         // 连接成功时，发送注册消息
         String sn = getParameter("device.sn");
         byte[] vin = new byte[0];
@@ -95,7 +98,7 @@ public class SimpleDriveTask extends AbstractDriveTask
         int answerSequence = ByteUtils.getShort(msg.body, 0, 2) & 0xffff;
         int answerMessageId = ByteUtils.getShort(msg.body, 2, 2) & 0xffff;
         int result = msg.body[4] & 0xff;
-        log(String.format("answer -> seq: %4d, id: %04x, result: %02d", answerSequence, answerMessageId, result));
+        logger.debug(String.format("answer -> seq: %4d, id: %04x, result: %02d", answerSequence, answerMessageId, result));
 
         // TODO: 应该整个hashmap保存上一次发送的消息ID，KEY为流水号
 
@@ -111,16 +114,15 @@ public class SimpleDriveTask extends AbstractDriveTask
     @Listen(when = EventEnum.message_received, attachment = "8100")
     public void onRegisterResponsed(JTT808Message msg)
     {
-        log("register responsed");
         int result = msg.body[2] & 0xff;
         if (result == 0x00)
         {
-
+            log(LogType.STATE, "registered");
             startSession();
         }
         else
         {
-            log("register failed...");
+            log(LogType.EXCEPTION, "register failed");
             terminate();
         }
     }
@@ -128,12 +130,14 @@ public class SimpleDriveTask extends AbstractDriveTask
     @Listen(when = EventEnum.disconnected)
     public void onDisconnected()
     {
-        log("connection lost");
+        log(LogType.EXCEPTION, "disconnected");
     }
 
     // 开始正常会话，发送心跳与位置
     protected void startSession()
     {
+        // 暂时先屏蔽掉，没发送心跳消息就暂时先不执行了
+        /*
         executeConstantly(new Executable()
         {
             @Override
@@ -142,7 +146,7 @@ public class SimpleDriveTask extends AbstractDriveTask
                 ((SimpleDriveTask)driveTask).heartbeat();
             }
         }, 30000);
-
+        */
         reportLocation();
     }
 
@@ -207,6 +211,8 @@ public class SimpleDriveTask extends AbstractDriveTask
             lastSentMessageId = msg.id;
 
             logger.info("send: {} -> {} : {}", msg.sim, msg.sequence, String.format("%04x", msg.id));
+
+            log(LogType.MESSAGE_OUT, ByteUtils.toString(JTT808Encoder.encode(msg)));
         }
         catch (Exception e)
         {
