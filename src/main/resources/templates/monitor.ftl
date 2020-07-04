@@ -390,7 +390,7 @@
                 var type = item.type;
                 if (item.type == 'MESSAGE_IN') type = '下行消息';
                 else if (item.type == 'MESSAGE_OUT') type = '上行消息';
-                else if (item.type == 'STATE') type = '状态变化';
+                else if (item.type == 'INFO') type = '信息';
                 else if (item.type == 'EXCEPTION') type = '异常';
                 else if (item.type == 'USER_TRIGGER') type = '用户触发';
 

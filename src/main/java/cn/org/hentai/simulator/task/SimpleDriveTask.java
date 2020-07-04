@@ -7,7 +7,6 @@ import cn.org.hentai.simulator.task.event.EventEnum;
 import cn.org.hentai.simulator.task.event.Listen;
 import cn.org.hentai.simulator.task.event.EventDispatcher;
 import cn.org.hentai.simulator.task.log.LogType;
-import cn.org.hentai.simulator.task.net.JT808MessageEncoder;
 import cn.org.hentai.simulator.task.runner.Executable;
 import cn.org.hentai.simulator.task.net.ConnectionPool;
 import cn.org.hentai.simulator.util.ByteUtils;
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * Created by matrixy when 2020/5/9.
@@ -74,7 +72,7 @@ public class SimpleDriveTask extends AbstractDriveTask
     @Listen(when = EventEnum.connected)
     public void onConnected()
     {
-        log(LogType.STATE, "connected");
+        log(LogType.INFO, "connected");
         // 连接成功时，发送注册消息
         String sn = getParameter("device.sn");
         byte[] vin = new byte[0];
@@ -119,7 +117,7 @@ public class SimpleDriveTask extends AbstractDriveTask
         int result = msg.body[2] & 0xff;
         if (result == 0x00)
         {
-            log(LogType.STATE, "registered");
+            log(LogType.INFO, "registered");
             startSession();
         }
         else
@@ -155,7 +153,7 @@ public class SimpleDriveTask extends AbstractDriveTask
         if (tts) log += "终端TTS播读，";
         if (adScreen) log += "广告屏显示，";
         log += CANCode ? "CAN故障码，" : "中心导航信息，";
-        log(LogType.STATE, log + "文本：" + text);
+        log(LogType.INFO, log + "文本：" + text);
 
         // 回应一下
         GENERAL_RESPONSE.body = Packet.create(5).addShort((short) msg.sequence).addShort((short) msg.id).addByte((byte) 0x00).getBytes();

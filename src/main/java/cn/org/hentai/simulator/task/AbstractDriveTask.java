@@ -181,7 +181,7 @@ public abstract class AbstractDriveTask implements Driveable
     @Override
     public void terminate()
     {
-        log(LogType.STATE, "terminated");
+        log(LogType.INFO, "terminated");
         this.state = TaskState.terminated;
     }
 
