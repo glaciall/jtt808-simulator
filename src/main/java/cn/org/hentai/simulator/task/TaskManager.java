@@ -75,7 +75,7 @@ public final class TaskManager
         AbstractDriveTask[] list = tasks.values().toArray(new AbstractDriveTask[0]);
         Arrays.sort(list, SORT_COMPARATOR);
         List<TaskInfo> results = new ArrayList<TaskInfo>(pageSize);
-        for (int i = Math.max(pageIndex - 1 * pageSize, 0); i < pageSize && i < list.length; i++)
+        for (int k = 0, i = Math.max((pageIndex - 1) * pageSize, 0); k < pageSize && i < list.length; i++, k++)
         {
             results.add(list[i].getInfo());
         }
