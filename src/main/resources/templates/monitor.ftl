@@ -202,10 +202,10 @@
                     <hr />
                     <h4>报警标志<span>点击置位，高亮表示相应位为1</span></h4>
                     <div class="x-grids" id="warning-flags">
-                        <div>00<span>紧急报警，收到应答后清零</span></div>
+                        <div>00<span>紧急报警</span></div>
                         <div>01<span>超速报警</span></div>
                         <div>02<span>疲劳驾驶</span></div>
-                        <div>03<span>危险预警，收到应答后清零</span></div>
+                        <div>03<span>危险预警</span></div>
                         <div>04<span>GNSS模块发生故障</span></div>
                         <div>05<span>GNSS天线未接或被剪断</span></div>
                         <div>06<span>GNSS天线短路</span></div>
@@ -222,18 +222,18 @@
                         <div>17<span>保留</span></div>
                         <div>18<span>当天累计驾驶超时</span></div>
                         <div>19<span>超时停车</span></div>
-                        <div>20<span>进出区域，收到应答后清零</span></div>
-                        <div>21<span>进出路线，收到应答后清零</span></div>
-                        <div>22<span>路段行驶时间不足/过长,收到应答后清零</span></div>
+                        <div>20<span>进出区域</span></div>
+                        <div>21<span>进出路线</span></div>
+                        <div>22<span>路段行驶时间不足/过长</span></div>
                         <div>23<span>路线偏离报警</span></div>
                         <div>24<span>车辆VSS故障</span></div>
                         <div>25<span>车辆油量异常</span></div>
                         <div>26<span>车辆被盗（通过车辆防盗器）</span></div>
-                        <div>27<span>车辆非法点火，收到应答后清零</span></div>
-                        <div>28<span>车辆非法位移，收到应答后清零</span></div>
+                        <div>27<span>车辆非法点火</span></div>
+                        <div>28<span>车辆非法位移</span></div>
                         <div>29<span>碰撞预警</span></div>
                         <div>30<span>侧翻预警</span></div>
-                        <div>31<span>非法开门报警，收到应答后清零</span></div>
+                        <div>31<span>非法开门报警</span></div>
                     </div>
                     <h4>状态位<span>点击置位，高亮表示相应位为1</span></h4>
                     <div class="x-grids" id="state-flags">
