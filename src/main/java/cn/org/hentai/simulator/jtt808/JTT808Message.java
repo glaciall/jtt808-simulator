@@ -6,6 +6,8 @@ package cn.org.hentai.simulator.jtt808;
  */
 public class JTT808Message
 {
+    static final byte[] ZERO_LENGTH_ARRAY = new byte[0];
+
     // 消息id
     public int id;
 
@@ -27,6 +29,18 @@ public class JTT808Message
     public JTT808Message()
     {
         // ...
+    }
+
+    public JTT808Message(int id)
+    {
+        this.id = id;
+        this.body = ZERO_LENGTH_ARRAY;
+    }
+
+    public JTT808Message(int id, byte[] body)
+    {
+        this.id = id;
+        this.body = body;
     }
 
     public JTT808Message(int id, String sim, byte[] body)

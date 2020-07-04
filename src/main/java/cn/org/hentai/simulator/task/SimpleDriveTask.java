@@ -43,6 +43,8 @@ public class SimpleDriveTask extends AbstractDriveTask
 
     SimpleDateFormat sdf = new SimpleDateFormat("YYMMddHHmmss");
 
+    final JTT808Message GENERAL_RESPONSE = new JTT808Message(0x0001);
+
     public SimpleDriveTask(long id, long routeId)
     {
         super(id, routeId);
@@ -131,6 +133,32 @@ public class SimpleDriveTask extends AbstractDriveTask
     public void onDisconnected()
     {
         log(LogType.EXCEPTION, "disconnected");
+    }
+
+    // 接收到文本信息
+    @Listen(when = EventEnum.message_received, attachment = "8300")
+    public void onTTSMessage(JTT808Message msg)
+    {
+        Packet p = Packet.create(msg.body);
+        int flag = p.nextByte() & 0xff;
+        String text = null;
+        try { text = new String(p.nextBytes(), "GBK"); } catch(Exception ex) { }
+        boolean emergency = (flag & (1 << 0)) > 0;
+        boolean display = (flag & (1 << 2)) > 0;
+        boolean tts = (flag & (1 << 3)) > 0;
+        boolean adScreen = (flag & (1 << 4)) > 0;
+        boolean CANCode = (flag & (1 << 5)) > 0;
+        String log = "标志：";
+        if (emergency) log += "紧急，";
+        if (display) log += "终端显示器显示，";
+        if (tts) log += "终端TTS播读，";
+        if (adScreen) log += "广告屏显示，";
+        log += CANCode ? "CAN故障码，" : "中心导航信息，";
+        log(LogType.STATE, log + "文本：" + text);
+
+        // 回应一下
+        GENERAL_RESPONSE.body = Packet.create(5).addShort((short) msg.sequence).addShort((short) msg.id).addByte((byte) 0x00).getBytes();
+        send(GENERAL_RESPONSE);
     }
 
     // 开始正常会话，发送心跳与位置
