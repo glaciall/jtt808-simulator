@@ -40,12 +40,29 @@ public class Point implements Serializable
      */
     private int warnFlags;
 
+    private int mileages;
+
     /**
      * 车辆状态位
      */
     private int status;
 
     private boolean isStay;
+
+    public Point()
+    {
+        this.mileages = 0;
+    }
+
+    public int getMileages()
+    {
+        return mileages;
+    }
+
+    public void setMileages(int mileages)
+    {
+        this.mileages = mileages;
+    }
 
     public boolean isStay()
     {
