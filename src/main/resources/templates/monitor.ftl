@@ -4,6 +4,7 @@
 <#include "inc/resource.ftl">
     <title>行程任务详情</title>
     <style type="text/css">
+        body { overflow: hidden; }
         .content
         {
             padding: 0px 350px 300px 0px;
