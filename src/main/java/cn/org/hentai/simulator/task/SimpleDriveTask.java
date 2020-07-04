@@ -133,6 +133,7 @@ public class SimpleDriveTask extends AbstractDriveTask
     public void onDisconnected()
     {
         log(LogType.EXCEPTION, "disconnected");
+        terminate();
     }
 
     // 接收到文本信息
