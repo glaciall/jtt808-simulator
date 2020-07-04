@@ -109,7 +109,7 @@ public class MapMonitorController extends BaseController
         Result result = new Result();
         try
         {
-            // ...
+            TaskManager.getInstance().terminate(id);
         }
         catch(Exception ex)
         {

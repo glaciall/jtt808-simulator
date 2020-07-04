@@ -5,6 +5,7 @@ import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.entity.TaskInfo;
 import cn.org.hentai.simulator.manager.RouteManager;
 import cn.org.hentai.simulator.task.log.Log;
+import cn.org.hentai.simulator.task.runner.Executable;
 import cn.org.hentai.simulator.web.vo.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +86,7 @@ public final class TaskManager
         return page;
     }
 
+    // 获取timeAfter时间之后的任务日志
     public List<Log> getLogsById(Long id, long timeAfter)
     {
         AbstractDriveTask task = tasks.get(id);
@@ -100,6 +102,7 @@ public final class TaskManager
         else return task.getInfo();
     }
 
+    // 获取当前位置信息
     public Point getCurrentPositionById(Long id)
     {
         AbstractDriveTask task = tasks.get(id);
@@ -107,16 +110,34 @@ public final class TaskManager
         else return task.getCurrentPosition();
     }
 
+    // 修改车辆状态标志位
     public void setStateFlagById(Long id, int index, boolean on)
     {
         AbstractDriveTask task = tasks.get(id);
         if (task != null) task.setStateFlag(index, on);
     }
 
+    // 修改报警状态标志位
     public void setWarningFlagById(Long id, int index, boolean on)
     {
         AbstractDriveTask task = tasks.get(id);
         if (task != null) task.setWarningFlag(index, on);
+    }
+
+    // 任务终止
+    // TODO: 什么时候把任务从map里删除掉好呢？
+    public void terminate(Long id)
+    {
+        AbstractDriveTask task = tasks.get(id);
+        if (task == null) throw new RuntimeException("无此任务或任务已终止");
+        task.execute(new Executable()
+        {
+            @Override
+            public void execute(AbstractDriveTask driveTask)
+            {
+                driveTask.terminate();
+            }
+        });
     }
 
     static final TaskManager instance = new TaskManager();
