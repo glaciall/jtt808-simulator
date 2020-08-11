@@ -171,7 +171,7 @@ public final class RouteManager
      * 创建任务线路
      * @param routeId 线路模板
      * @param startTime 任务运行开始时间
-     * @param interval 任务位置上报的时间间隔，单位：秒
+     * @param interval 任务位置上报的时间间隔，单位：毫秒
      * @return
      */
     public DrivePlan generate(Long routeId, Date startTime, int interval)
