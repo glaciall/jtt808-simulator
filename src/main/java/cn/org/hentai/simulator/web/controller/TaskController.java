@@ -62,7 +62,7 @@ public class TaskController
                 throw new RuntimeException("请填写正确的终端ID");
 
             if (StringUtils.isEmpty(simNumber) || simNumber.matches("^\\d{11,12}$") == false)
-                throw new RuntimeException("请填写正确的终端ID");
+                throw new RuntimeException("请填写正确的SIM卡号");
 
             if (StringUtils.isEmpty(serverPort) || serverPort.matches("^\\d{1,5}$") == false)
                 throw new RuntimeException("请填写正确的服务器端口");
