@@ -34,7 +34,7 @@ public class SimulatorApp
         BeanUtils.init(context);
         Configs.init(context);
 
-        RouteManager.init();
+        RouteManager.getInstance().init();
         TaskManager.init();
 
         RunnerManager.init();

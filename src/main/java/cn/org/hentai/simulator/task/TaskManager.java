@@ -56,7 +56,7 @@ public final class TaskManager
     public void run(Map params, Long routeId)
     {
         // TODO: 需要检查一下是不是有冲突（终端ID及SIM卡号不能重复）
-        DrivePlan plan = RouteManager.getInstance().generate(routeId, new Date(), 5000);
+        DrivePlan plan = RouteManager.getInstance().generate(routeId, new Date());
 
         AbstractDriveTask task = new SimpleDriveTask(this.sequence.addAndGet(1L), routeId);
         task.init(params, plan);
