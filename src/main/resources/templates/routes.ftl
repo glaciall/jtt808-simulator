@@ -74,19 +74,32 @@
                     }
                 },
                 {
-                    name: '-',
+                    name: 'id',
                     title: '操作',
                     align: 'center',
                     width : '160px',
                     formatter: function (i, v, r)
                     {
                         var html = '';
-                        html += '<a href="${context}/route/edit?id=' + r.id + '" target="_blank" class="btn btn-sm btn-blue">编辑</a>';
+                        html += '<a href="javascript:;" class="btn btn-sm btn-blue">编辑</a>';
+                        html += '<a href="javascript:;" onclick="remove(\'' + v + '\')" class="btn btn-sm btn-orange">删除</a>';
                         return html;
                     }
                 }
             ]
         });
     });
+
+    function remove(id)
+    {
+        if (!confirm('真的要删除吗？')) return;
+        $.post('${context}/route/remove', { id : id }, function(result)
+        {
+            if (result.error && result.error.code) return alert(result.error.reason);
+            alert('删除成功');
+            $('#route-table').paginate('reload');
+        });
+    }
+
 </script>
 </html>

@@ -48,14 +48,21 @@
             <div class="x-col-6"><input type="text" name="simNumber" id="simNumber" /></div>
             <div class="x-clearfix"></div>
         </div>
+
+        <div class="x-row">
+            <div class="x-col-2 text-right">初始里程数：</div>
+            <div class="x-col-6"><input type="text" name="mileages" id="mileages" placeholder="单位公里，默认为0" /></div>
+            <div class="x-clearfix"></div>
+        </div>
+
         <div class="x-row">
             <div class="x-col-2 text-right">808网关服务器：</div>
-            <div class="x-col-6"><input type="text" name="serverAddress" id="serverAddress" /></div>
+            <div class="x-col-6"><input type="text" name="serverAddress" id="serverAddress" value="${vehicleServerAddr}" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">808网关服务器端口：</div>
-            <div class="x-col-6"><input type="text" name="serverPort" id="serverPort" /></div>
+            <div class="x-col-6"><input type="text" name="serverPort" id="serverPort" value="${vehicleServerPort}" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
@@ -80,6 +87,7 @@
                 vehicleNumber : $('#vehicleNumber').val(),
                 deviceSn : $('#deviceSn').val(),
                 simNumber : $('#simNumber').val(),
+                mileages : $('#mileages').val(),
                 serverAddress : $('#serverAddress').val(),
                 serverPort : $('#serverPort').val()
             };
@@ -89,7 +97,8 @@
                 if (result.error && result.error.code) return toastr('error', result.error.reason);
                 else
                 {
-                    toastr('success', '启动成功');
+                    // toastr('success', '启动成功');
+                    alert('启动成功');
                 }
             });
         });

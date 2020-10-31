@@ -31,32 +31,17 @@
         #map { width: 100%; height: 100%; }
         .anchorBL { display: none !important; }
 
-        .x-search-box
+        #x-poi-list
         {
-            width: 100%;
-            height: 40px;
             position: absolute;
             top: 0px;
-            left: 0px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding-left: 410px;
-            z-index: 10;
-        }
-        .x-search-box .x-row input { width: 100%; height: 30px; outline: none; border: none; margin-top: 5px; }
-        .x-search-box .x-row button { margin-top: 5px; }
-        .x-search-box .x-row { margin-left: -10px; margin-right: -10px; }
-        .x-search-box .x-col-3, .x-search-box .x-col-1 { padding-left: 10px; padding-right: 10px; }
-        .x-search-box #x-poi-list
-        {
-            position: absolute;
-            top: 41px;
-            left: 440px;
+            left: 800px;
             width: 600px;
             background-color: rgba(0, 0, 0, 0.7);
             padding: 10px;
             display: none;
         }
-        .x-search-box #x-poi-list a, .x-search-box #x-poi-list a:visited
+        #x-poi-list a, #x-poi-list a:visited
         {
             display: block;
             height: 30px;
@@ -64,14 +49,59 @@
             color: #ffffff;
             padding-left: 5px;
         }
-        .x-search-box #x-poi-list a:hover
+        #x-poi-list a:hover
         {
             background-color: rgba(255, 255, 255, 0.3);
         }
-        .x-search-box #x-poi-list a button
+        #x-poi-list a button
         {
             float: right;
             margin-top: 3px;
+        }
+        .route-actions
+        {
+            padding: 10px 0px 10px 0px;
+            text-align: center;
+        }
+        .panel-route
+        {
+            left: 400px !important;
+        }
+        .station
+        {
+            height: 40px;
+            line-height: 40px;
+        }
+        .station .station-title
+        {
+            width: 100px;
+            height: 40px;
+            line-height: 40px;
+            float: left;
+        }
+        .station .station-value
+        {
+            width: 210px;
+            height: 40px;
+            line-height: 40px;
+            float: left;
+        }
+        .station .station-value input
+        {
+            width: 100%;
+            height: 30px;
+        }
+        .station .station-action
+        {
+            width: 80px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            float: left;
+        }
+        .station .station-action a
+        {
+            margin: 0px 4px 0px 4px;
         }
     </style>
 </head>
@@ -79,15 +109,6 @@
 <div class="container">
     <#include "inc/sidebar.ftl">
     <div class="content">
-        <div class="x-search-box">
-            <div class="x-row">
-                <div class="x-col-3"><input type="text" placeholder="出发地点" id="startAddress" /></div>
-                <div class="x-col-3"><input type="text" placeholder="目标地点" id="endAddress" /></div>
-                <div class="x-col-1"><button id="btn-plan" class="btn btn-blue">线路规划</button></div>
-                <div class="x-clearfix"></div>
-            </div>
-            <div id="x-poi-list"></div>
-        </div>
         <div id="panel">
             <h4>
                 线路设置
@@ -143,7 +164,18 @@
             </div>
             <div id="x-trouble-segments"></div>
         </div>
+        <div id="panel" class="panel-route">
+            <h4>
+                行驶线路规划
+                <button id="btn-add-station" class="btn btn-sm btn-blue">添加站点</button>
+            </h4>
+            <div class="panel-body">
+                <div id="stations"></div>
+                <div class="route-actions"><button id="btn-plan" class="btn btn-blue">线路规划</button></div>
+            </div>
+        </div>
         <div id="map"></div>
+        <div id="x-poi-list"></div>
     </div>
 </div>
 </body>
@@ -153,6 +185,7 @@
 <script type="text/javascript">
     var map = null;
     var ruler = null;
+    var stationIndex = 0;
 
     var eventTypes = [
         { code : 'e-illegal', name : '违规驾驶' },
@@ -169,9 +202,11 @@
 
     var route = {
         mileages : 0,
+        duration : 0,
         points : [],
         stayPoints : [],
         troubleSegments : [],
+        stations : [],
 
         // 添加停留点
         addStayPoint : function(lng, lat, marker)
@@ -383,7 +418,7 @@
                     var p = poi.point;
                     shtml += '<a href="javascript:;" x-longitude="' + p.lng + '" x-latitude="' + p.lat + '">' + poi.title + '<button class="btn btn-blue btn-sm" onclick="chooseAddress(' + p.lng + ', ' + p.lat + ')">选择</button></a>';
                 }
-                $('#x-poi-list').html(shtml);
+                $('#x-poi-list').html(shtml).fadeIn();
             }
         });
 
@@ -489,51 +524,176 @@
             var name = $.trim($('#name').val());
             var minSpeed = $.trim($('#minSpeed').val());
             var maxSpeed = $.trim($('#maxSpeed').val());
-            var pointsJson = toJson(route.points);
+            var points = getRoutePoints();
+            var pointsJson = toJson(points);
             var stayPointsJson = toJson(route.stayPoints);
             var segmentsJson = toJson(route.troubleSegments);
 
             if (name.length == 0) return toastr('warning', '请输入线路名称');
             if (isNaN(minSpeed) || isNaN(maxSpeed) || minSpeed.length == 0 || maxSpeed.length == 0) return toastr('warning', '请输入速度区间'), false;
-            if (route.points.length == 0) return toastr('warning', '你尚未设定线路轨迹'), false;
+            if (points.length == 0) return toastr('warning', '你尚未设定线路轨迹'), false;
             if (route.stayPoints.length == 0 && !confirm('你未设定停留点，是否继续保存？')) return false;
             if (route.troubleSegments.length == 0 && !confirm('你未设定问题路段，是否继续保存？')) return false;
 
             $.post('${context}/route/save', { name : name, minSpeed : minSpeed, maxSpeed : maxSpeed,
-                mileages : route.mileages, pointsJsonText : pointsJson, stayPointsJsonText : stayPointsJson, segmentsJsonText : segmentsJson }, function(result)
+                mileages : parseInt(route.mileages * 100), pointsJsonText : pointsJson, stayPointsJsonText : stayPointsJson, segmentsJsonText : segmentsJson }, function(result)
             {
                 if (result.error && result.error.code) return alert(result.error.reason);
                 alert('保存成功');
                 location.href = '${context}/route/index';
             });
         });
+
+        // 添加站点
+        $('#btn-add-station').click(function()
+        {
+            var index = stationIndex += 1;
+            var shtml = '';
+            shtml += '<div class="station" id="station-' + index + '">';
+            shtml += '  <div class="station-title text-right">站点地址：</div>';
+            shtml += '  <div class="station-value"><input type="text" id="station-addr-' + index + '" /></div>';
+            shtml += '  <div class="station-action">';
+            shtml += '      <a href="#" onclick="locate(' + index + ');"><i class="fa fa-crosshairs"></i></a>';
+            shtml += '      <a href="#" onclick="removeStation(' + index + ')"><i class="fa fa-times"></i></a>';
+            shtml += '  </div>';
+            shtml += '  <div class="clearfix"></div>';
+            shtml += '</div>';
+
+            $('#stations').append(shtml);
+
+            route.stations.push({
+                index : index,
+                address : '',
+                longitude : 0,
+                latitude : 0,
+                located : false,
+                marker : null
+            });
+        });
+
+        // 位置填写
+        $(document).on('change', 'input[id^=station-addr-]', function()
+        {
+            var el = $(this);
+            var index = el.attr('id').replace(/^station-addr-(\d+)$/gi, '$1');
+            var addr = el.val();
+            for (var i = 0; i < route.stations.length; i++)
+            {
+                if (route.stations[i] && route.stations[i].index == index)
+                {
+                    route.stations[i].address = addr;
+                    return;
+                }
+            }
+        });
+
+        // 线路规划
+        $('#btn-plan').click(function()
+        {
+            var stops = [];
+            // 1. 能不能规划？
+            for (var i = 0; i < route.stations.length; i++)
+            {
+                var item = route.stations[i];
+                if (item && item.longitude) stops.push(new BMap.Point(item.longitude, item.latitude));
+            }
+            if (stops.length < 2) return alert('最低需要设定两个经停站点');
+            route.stops = stops;
+
+            // 2. 开始规划
+            route.mileages = 0;
+            route.stayPoints = [];
+            route.troubleSegments = [];
+            route.points = [];
+            $('#route-duration').html('-');
+            $('#route-distance').html('-');
+            map.clearOverlays();
+            doRoutePlan();
+        });
     });
 
-    function doRoutePlan(startPoint, endPoint)
+    // 删除站点
+    function removeStation(index)
     {
-        $('#route-duration').html('-');
-        $('#route-distance').html('-');
+        $('#station-' + index).remove();
+        for (var i = 0; i < route.stations.length; i++)
+        {
+            if (route.stations[i] && route.stations[i].index == index)
+            {
+                route.stations[i] = null;
+                return;
+            }
+        }
+    }
 
-        map.clearOverlays();
-        route.points = [];
-        route.stayPoints = [];
-        route.troubleSegments = [];
+    // 站点地图搜索
+    function locate(index)
+    {
+        var addr = '';
+        for (var i = 0; i < route.stations.length; i++)
+        {
+            if (route.stations[i] && route.stations[i].index == index)
+            {
+                addr = route.stations[i].address;
+                break;
+            }
+        }
+        if (!addr) return;
+
+        // 地图搜索
+        localSearch.search(addr);
+        currentStationIndex = index;
+    }
+
+    function doRoutePlan()
+    {
+        var startPoint = route.stops.shift();
+        // 完全没有
+        if (!startPoint) return;
+        var endPoint = route.stops[0];
+
+        // 最后一个了
+        if (!endPoint)
+        {
+            // 需要完成停留点的生成
+            route.stayPoints = [];
+            for (var i = 0, k = 0; i < route.stations.length; i++)
+            {
+                // 没有略过第一个和最后一个。。。待定吧。。。
+                var item = route.stations[i];
+                if (!item || !item.longitude) continue;
+                var marker = new BMap.Marker(new BMap.Point(item.longitude, item.latitude));
+                map.addOverlay(marker);
+                route.addStayPoint(item.longitude, item.latitude, marker);
+                k += 1;
+            }
+            route.__generate_stay_point_rows();
+            route.__generate_segment_rows();
+            isMarkMode = false;
+
+            return;
+        }
 
         var transit = new BMap.DrivingRoute(map, {
             renderOptions: {
                 map: map,
-                enableDragging : true
+                enableDragging : true,
+                autoViewport : false
             },
             onSearchComplete : function(result)
             {
+                doRoutePlan();
+
                 if (result.getNumPlans() == 0) return;
                 var plan = result.getPlan(0);
-                var duration = plan.getDuration();
-                var distance = plan.getDistance();
-                $('#route-duration').html(duration);
-                $('#route-distance').html(distance);
+                var duration = route.duration + parseTime(plan.getDuration());
+                var distance = route.mileages + parseInt(parseMileage(plan.getDistance()) * 10);
 
-                route.mileages = plan.getDistance(false);
+                $('#route-duration').html(duration + '分钟');
+                $('#route-distance').html((distance / 10).toFixed(1) + '公里');
+
+                route.duration = duration;
+                route.mileages = distance;
             },
             onPolylinesSet : function(routes)
             {
@@ -544,7 +704,7 @@
                     line.setStrokeColor('#ffffff');
                     points = points.concat(line.getPath());
                 }
-                if (points.length == 0) return toastr('warning', '无法完成从 ' + saddress + ' 到 ' + eaddress + ' 的线路规划！');
+                if (points.length == 0) return toastr('warning', '线路规划失败');
 
                 // 点集合
                 for (var i = 0; i < points.length; i++)
@@ -552,15 +712,40 @@
                     points[i].index = i;
                 }
 
-                route.points = points;
-                route.stayPoints = [];
-                route.troubleSegments = [];
-                route.__generate_stay_point_rows();
-                route.__generate_segment_rows();
-                isMarkMode = false;
+                // TODO: 需要通过别的办法来获取调整后的线路轨迹
+                // route.points = route.points.concat(points);
+                // route.stayPoints = [];
+                // route.troubleSegments = [];
             }
         });
         transit.search(startPoint, endPoint);
+    }
+
+    // 获取地图上的所有线路的轨迹点，目前只能通过地图上的线条的粗细来判断是不是
+    function getRoutePoints()
+    {
+        var points = [];
+        var overlays = map.getOverlays();
+        for (var i = 0; i < overlays.length; i++)
+        {
+            var item = overlays[i];
+            if (!item.getPath) continue;
+            if (item.getStrokeWeight() != 5) continue;
+            points = points.concat(item.getPath());
+        }
+        return points;
+    }
+
+    function parseMileage(x)
+    {
+        return parseFloat(x);
+    }
+
+    function parseTime(x)
+    {
+        var t = parseFloat(x);
+        if (x.indexOf('分钟') > -1) return t;
+        else if (x.indexOf('小时') > -1) return t * 60;
     }
 
     function toJson(list)
@@ -626,9 +811,9 @@
 
 <script type="text/javascript">
     var startPoint, endPoint;
-    var searchTimeout = 0;
     var currentAddressType;
     var currentPoiMarker = null;
+    var currentStationIndex = 0;
     var localSearch = null;
 
     $(document).ready(function()
@@ -642,28 +827,6 @@
             currentPoiMarker.setAnimation(BMAP_ANIMATION_BOUNCE);
             map.centerAndZoom(point, 16);
         });
-
-        $('#btn-plan').click(function()
-        {
-            if (!startPoint) return toastr('error', '请选择起点');
-            if (!endPoint) return toastr('error', '请选择终点');
-            doRoutePlan(startPoint, endPoint);
-        });
-
-        $('#startAddress, #endAddress').keyup(function()
-        {
-            var el = $(this);
-            var pos = el.position();
-            $('#x-poi-list').css({ display : 'block', 'top' : pos.top + 41, 'left' : pos.left });
-
-            var key = el.val();
-            currentAddressType = el.attr('id');
-            if (searchTimeout) clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(function()
-            {
-                localSearch.search(key);
-            }, 30);
-        });
     });
 
     function chooseAddress(lng, lat)
@@ -672,6 +835,8 @@
         $('#x-poi-list').fadeOut();
         if (currentAddressType == 'startAddress') startPoint = p;
         else endPoint = p;
+        route.stations[currentStationIndex - 1].longitude = lng;
+        route.stations[currentStationIndex - 1].latitude = lat;
     }
 
 </script>

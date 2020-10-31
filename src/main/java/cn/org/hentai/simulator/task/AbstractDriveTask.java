@@ -135,12 +135,29 @@ public abstract class AbstractDriveTask implements Driveable
     // 获取下一个位置信息
     public final Point getNextPoint()
     {
-        return currentPosition = drivePlan.getNextPoint();
+        return drivePlan.getNextPoint();
     }
 
     public final Point getCurrentPosition()
     {
-        return currentPosition;
+        if (currentPosition == null) return null;
+
+        Point p = new Point();
+        p.setLongitude(currentPosition.getLongitude());
+        p.setLatitude(currentPosition.getLatitude());
+        p.setReportTime(currentPosition.getReportTime());
+        p.setDirection(currentPosition.getDirection());
+        p.setMileages(currentPosition.getMileages());
+        p.setStatus(currentPosition.getStatus());
+        p.setStay(currentPosition.isStay());
+        p.setSpeed(currentPosition.getSpeed());
+        p.setWarnFlags(currentPosition.getWarnFlags());
+        return p;
+    }
+
+    protected final void setCurrentPosition(Point point)
+    {
+        currentPosition = point;
     }
 
     /**
@@ -170,7 +187,7 @@ public abstract class AbstractDriveTask implements Driveable
 
     public String getParameter(String name)
     {
-        return this.parameters.get(name);
+        return String.valueOf(this.parameters.get(name));
     }
 
     public TaskState getState()

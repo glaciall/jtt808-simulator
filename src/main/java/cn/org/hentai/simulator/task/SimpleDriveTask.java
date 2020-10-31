@@ -10,6 +10,7 @@ import cn.org.hentai.simulator.task.log.LogType;
 import cn.org.hentai.simulator.task.runner.Executable;
 import cn.org.hentai.simulator.task.net.ConnectionPool;
 import cn.org.hentai.simulator.util.ByteUtils;
+import cn.org.hentai.simulator.util.LBSUtils;
 import cn.org.hentai.simulator.util.Packet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,10 @@ public class SimpleDriveTask extends AbstractDriveTask
     // 最后发送的消息ID
     int lastSentMessageId = 0;
 
+    // 以米为单位的总行程里程数
+    int mileages = 0;
+    Point lastPosition = null;
+
     // 连接池
     ConnectionPool pool = ConnectionPool.getInstance();
 
@@ -53,6 +58,14 @@ public class SimpleDriveTask extends AbstractDriveTask
     {
         EventDispatcher.register(this);
         connectionId = pool.connect(getParameter("server.address"), Integer.parseInt(getParameter("server.port")), this);
+
+        // 总行驶里程初始化
+        Object km = getParameter("mileages");
+        if (km != null)
+        {
+            int meters = Integer.parseInt(String.valueOf(km)) * 1000;
+            mileages = meters;
+        }
     }
 
     @Override
@@ -179,6 +192,7 @@ public class SimpleDriveTask extends AbstractDriveTask
 
     public void reportLocation()
     {
+        lastPosition = getCurrentPosition();
         final Point point = getNextPoint();
         if (point == null)
         {
@@ -201,6 +215,7 @@ public class SimpleDriveTask extends AbstractDriveTask
             {
                 JTT808Message msg = new JTT808Message();
                 msg.id = 0x0200;
+                int direction = lastPosition == null ? 0 : LBSUtils.caculateAngle(lastPosition.getLongitude(), lastPosition.getLatitude(), point.getLongitude(), point.getLatitude());
                 Packet p = Packet.create(128)
                         .addInt(point.getWarnFlags() | getWarningFlags())                               // DWORD, 报警标志位
                         .addInt(point.getStatus() | getStateFlags())                                    // DWORD，状态
@@ -208,13 +223,26 @@ public class SimpleDriveTask extends AbstractDriveTask
                         .addInt((int)(point.getLongitude() * 100_0000))                                 // DWORD，经度
                         .addShort((short)0)                                                             // WORD，海拔
                         .addShort((short)(point.getSpeed() * 10))                                       // WORD，速度
-                        .addShort((short)point.getDirection())                                          // WORD，方向，暂未计算
+                        .addShort((short)direction)                                                     // WORD，方向
                         .addBytes(ByteUtils.toBCD(sdf.format(new Date(point.getReportTime()))))         // BCD[6]，时间
                         ;
                 // TODO: 增加附加信息
+
+                // 里程数
+                int km = (lastPosition == null ? 0 : LBSUtils.directDistance(point.getLongitude(), point.getLatitude(), lastPosition.getLongitude(), lastPosition.getLatitude()));
+                mileages += km;
+                km = mileages;
+                // 里程数单位为1/10公里
+
+                km = km / 100;
+                p.addByte((byte)0x01);
+                p.addByte((byte)0x04);
+                p.addInt(km);
+
                 msg.body = p.getBytes();
                 send(msg);
 
+                setCurrentPosition(point);
                 reportLocation();
             }
         }, (int)Math.max(point.getReportTime() - System.currentTimeMillis(), 0));

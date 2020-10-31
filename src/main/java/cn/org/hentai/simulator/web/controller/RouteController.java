@@ -1,6 +1,7 @@
 package cn.org.hentai.simulator.web.controller;
 
 import cn.org.hentai.simulator.entity.DrivePlan;
+import cn.org.hentai.simulator.entity.Point;
 import cn.org.hentai.simulator.manager.RouteManager;
 import cn.org.hentai.simulator.util.MD5;
 import cn.org.hentai.simulator.web.entity.Route;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -165,7 +167,7 @@ public class RouteController
                     stayPoint.setId(null);
                     stayPoint.setRouteid(id);
                 }
-                this.stayPointService.save(route, stayPoints);
+                stayPointService.save(route, stayPoints);
             }
 
             // 添加问题路段
@@ -183,7 +185,7 @@ public class RouteController
                     segment.setId(null);
                     segment.setRouteId(id);
                 }
-                this.troubleSegmentService.save(route, troubleSegments);
+                troubleSegmentService.save(route, troubleSegments);
             }
 
             // 更新内存中的线路缓存
@@ -191,6 +193,24 @@ public class RouteController
         } catch (Exception e)
         {
             result.setError(e);
+        }
+        return result;
+    }
+
+    @RequestMapping("/remove")
+    @ResponseBody
+    public Result remove(@RequestParam Long id)
+    {
+        Result result = new Result();
+        try
+        {
+            routeService.removeById(id);
+            routePointService.removeByRouteId(id);
+            stayPointService.removeByRouteId(id);
+        }
+        catch(Exception ex)
+        {
+            result.setError(ex);
         }
         return result;
     }

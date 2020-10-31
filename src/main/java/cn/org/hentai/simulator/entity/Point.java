@@ -54,6 +54,13 @@ public class Point implements Serializable
         this.mileages = 0;
     }
 
+    public Point(double lng, double lat)
+    {
+        this.longitude = lng;
+        this.latitude = lat;
+        this.mileages = 0;
+    }
+
     public int getMileages()
     {
         return mileages;

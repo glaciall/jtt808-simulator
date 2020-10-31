@@ -188,4 +188,33 @@ public final class LBSUtils
         if (Double.isNaN(lng) || Double.isNaN(lat)) return null;
         return new Position(lng, lat);
     }
+
+    /**
+     * 计算点(x1,y1) -> (x2,y2)间形成的夹角，正北为0，顺时钟方向
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
+     * @return
+     */
+    public static int caculateAngle(double x1, double y1, double x2, double y2)
+    {
+        double a = (90 - y2) * Math.PI / 180;
+        double b = (90 - y1) * Math.PI / 180;
+        double AOC_BOC = (x2 - x1) * Math.PI / 180;
+        double cosc = Math.cos(a) * Math.cos(b) + Math.sin(a) * Math.sin(b) * Math.cos(AOC_BOC);
+        double sinc = Math.sqrt(1 - cosc * cosc);
+        double sinA = Math.sin(a) * Math.sin(AOC_BOC) / sinc;
+        double A = Math.asin(sinA) * 180 / Math.PI;
+        double angle = 0;
+        if (x2 > x1 && y2 > y1) angle = A;
+        else if (x2 > x1 && y2 < y1) angle = 180 - A;
+        else if (x2 < x1 && y2 < y1) angle = 180 - A;
+        else if (x2 < x1 && y2 > y1) angle = 360 + A;
+        else if (x2 > x1 && y2 == y1) angle = 90;
+        else if (x2 < x1 && y2 == y1) angle = 270;
+        else if (x2 == x1 && y2 > y1) angle = 0;
+        else if (x2 == x1 && y2 < y1) angle = 180;
+        return (int) angle;
+    }
 }

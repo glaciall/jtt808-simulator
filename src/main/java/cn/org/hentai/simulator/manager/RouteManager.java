@@ -165,19 +165,31 @@ public final class RouteManager
 
     public DrivePlan generate(Long routeId, Date startTime)
     {
+        return generate(routeId, startTime, 5);
+    }
+
+    /**
+     * 通过给定的线路ID和开始时间，上报时间间隔，生成行程计划
+     * @param routeId 线路ID
+     * @param startTime 开始时间
+     * @param interval 上报时间间隔（单位为秒）
+     * @return
+     */
+    public DrivePlan generate(Long routeId, Date startTime, int interval)
+    {
         LinkedList<Point> points = new LinkedList();
         XRoute route = routes.get(routeId);
         List<Position> positionList = route.getPositionList();
 
         // 行驶速度随机化、轨迹点随机化、确定每一个点的到达时间
-        points = routeRandomize(positionList, route.getMinSpeed(), route.getMaxSpeed());
+        points = routeRandomize(positionList, route.getMinSpeed(), route.getMaxSpeed(), interval);
 
         // 产生报警事件
         // generateEvents(points, route.getTroubleSegmentList());
 
         // 生成停留点，并且修正上报时间
         // TODO: 同时完善安全事件信息
-        generateStayPoints(startTime, points, route.getVehicleStayPointList());
+        generateStayPoints(startTime, points, route.getVehicleStayPointList(), interval);
 
         DrivePlan plan = new DrivePlan();
         plan.setRoutePoints(points);
@@ -217,7 +229,7 @@ public final class RouteManager
     }
 
     // 创建停留点
-    private void generateStayPoints(Date startTime, LinkedList<Point> points, List<XStayPoint> vehicleStayPointList)
+    private void generateStayPoints(Date startTime, LinkedList<Point> points, List<XStayPoint> vehicleStayPointList, int interval)
     {
         int sindex = 0;
         for (int i = 0; i < points.size(); )
@@ -285,8 +297,8 @@ public final class RouteManager
             {
                 double r1 = (Math.random() * 20 - 10) * Math.pow(10, -5);
                 double r2 = (Math.random() * 20 - 10) * Math.pow(10, -5);
-                // TODO: 这个15000需要跟下一个循环体里的15000同样的来源
-                m += 15000;
+                // 停留点的位置上报时间间隔时长
+                m += interval * 5 * 1000;
                 Point newPoint = new Point();
                 newPoint.setLongitude(newLng + r1);
                 newPoint.setLatitude(newLat + r2);
@@ -303,18 +315,17 @@ public final class RouteManager
         long time = startTime.getTime();
         for (Point point : points)
         {
-            // TODO: 这里的时间间隔，需要由用户设置值来决定
-            time += 5000;
+            time += interval * 1000;
             if (point.isStay())
             {
-                time += 15000;
+                time += interval * 5 * 1000;
             }
             point.setReportTime(time);
         }
     }
 
     // 轨迹点随机化
-    private LinkedList<Point> routeRandomize(List<Position> positionList, int minSpeed, int maxSpeed)
+    private LinkedList<Point> routeRandomize(List<Position> positionList, int minSpeed, int maxSpeed, int interval)
     {
         // 每SAMPLING_RATIO个轨迹点生成一个随机速度点，然后再在之间进行更小范围的随机化
         final int SAMPLING_RATIO = 60;
@@ -357,7 +368,8 @@ public final class RouteManager
             // 以当前点为起点，以speed的速度，行驶5秒后，应该到哪里了。。
 
             // 下一个时间点，应该到达多远之后
-            int distanceToNext = (int)(speed * 5);
+            ///////////////////////////////////////////////////////////////////////// int distanceToNext = (int)(speed * 5);
+            int distanceToNext = (int)(speed * interval);
             LinkedList<Position> partial = new LinkedList<Position>();
             partial.add(current);
             int d = 0;
@@ -377,7 +389,6 @@ public final class RouteManager
                 p.setLongitude(pt.getLongitude());
                 p.setLatitude(pt.getLatitude());
                 p.setSpeed((float)(speed * 3600 / 1000));
-                // TODO: 计算方向，正北为0，顺时针方向
                 points.add(p);
                 break;
             }

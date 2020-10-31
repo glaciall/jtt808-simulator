@@ -5,6 +5,7 @@ import cn.org.hentai.simulator.web.entity.Route;
 import cn.org.hentai.simulator.web.service.RouteService;
 import cn.org.hentai.simulator.web.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,12 +21,20 @@ public class BatchController extends BaseController
     @Autowired
     RouteService routeService;
 
+    @Value("${vehicle-server.addr}")
+    String vehicleServerAddr;
+
+    @Value("${vehicle-server.port}")
+    String  vehicleServerPort;
+
     // 批量创建任务入口页面
     @RequestMapping("/index")
     public String index(Model model)
     {
         List<Route> routes = routeService.list();
         model.addAttribute("routes", routes);
+        model.addAttribute("vehicleServerAddr", vehicleServerAddr);
+        model.addAttribute("vehicleServerPort", vehicleServerPort);
 
         return "task-batch-create";
     }

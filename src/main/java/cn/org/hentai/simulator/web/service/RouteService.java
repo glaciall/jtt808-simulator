@@ -46,7 +46,7 @@ public class RouteService
 
     public List<Route> list()
     {
-        return routeMapper.selectByExample(new RouteExample());
+        return routeMapper.selectByExample(new RouteExample().createCriteria().example());
     }
 
     public Page<Route> find(String name, int pageIndex, int pageSize)

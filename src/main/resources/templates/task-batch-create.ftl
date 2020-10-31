@@ -62,12 +62,12 @@
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">808网关服务器：</div>
-            <div class="x-col-2"><input type="text" name="serverAddress" id="serverAddress" /></div>
+            <div class="x-col-2"><input type="text" name="serverAddress" id="serverAddress" value="${vehicleServerAddr}" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
             <div class="x-col-2 text-right">808网关服务器端口：</div>
-            <div class="x-col-2"><input type="text" name="serverPort" id="serverPort" /></div>
+            <div class="x-col-2"><input type="text" name="serverPort" id="serverPort" value="${vehicleServerPort}" /></div>
             <div class="x-clearfix"></div>
         </div>
         <div class="x-row">
